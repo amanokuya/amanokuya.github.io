@@ -16,16 +16,16 @@
   
     <meta name="keywords" content="" />
   
-  <meta name="description" content="在此前，我们了解了sql注入是什么，接下来将在sqlilab进行实战 首先，我们打开sqlilab的第一关 我们首先输入 id&#x3D;1 和 ?id&#x3D;1 and 1&#x3D;2 发现并没有出现报错,再试着往里面加入符号输入;时也没发生报错 一个个试过去后发现输入&#39;时会报错">
+  <meta name="description" content="在此前，我们了解了sql注入是什么，接下来将在sqlilab进行实战 首先，我们打开sqlilab的第一关 我们首先输入 ?id&#x3D;1 和 ?id&#x3D;1 and 1&#x3D;2 发现并没有出现报错,再试着往里面加入符号输入;时也没发生报错 一个个试过去后发现输入&#39;时会报错You have an error in your SQL syntax; check the manual that corres">
 <meta property="og:type" content="article">
 <meta property="og:title" content="sqlilab1">
 <meta property="og:url" content="http://example.com/2022/10/25/sqlilab1/index.html">
 <meta property="og:site_name" content="AceNyaRu">
-<meta property="og:description" content="在此前，我们了解了sql注入是什么，接下来将在sqlilab进行实战 首先，我们打开sqlilab的第一关 我们首先输入 id&#x3D;1 和 ?id&#x3D;1 and 1&#x3D;2 发现并没有出现报错,再试着往里面加入符号输入;时也没发生报错 一个个试过去后发现输入&#39;时会报错">
+<meta property="og:description" content="在此前，我们了解了sql注入是什么，接下来将在sqlilab进行实战 首先，我们打开sqlilab的第一关 我们首先输入 ?id&#x3D;1 和 ?id&#x3D;1 and 1&#x3D;2 发现并没有出现报错,再试着往里面加入符号输入;时也没发生报错 一个个试过去后发现输入&#39;时会报错You have an error in your SQL syntax; check the manual that corres">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://raw.githubusercontent.com/amanokuya/nyaru.github.io/main/%40B%7D5PR0U~_HLKGEV%5BM8VZ)5.png">
 <meta property="article:published_time" content="2022-10-25T10:54:15.000Z">
-<meta property="article:modified_time" content="2022-10-25T13:00:50.448Z">
+<meta property="article:modified_time" content="2022-11-01T13:12:40.787Z">
 <meta property="article:author" content="amanokuya">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/amanokuya/nyaru.github.io/main/%40B%7D5PR0U~_HLKGEV%5BM8VZ)5.png">
@@ -149,7 +149,7 @@
                     <i class="fa fa-edit"></i> 
                     
                     
-                        134
+                        513
                     
                     字
                 </li>
@@ -160,14 +160,14 @@
             
             <div id="expire-alert" class="alert alert-warning hidden" role="alert">
                 <div class="icon"><i class="fa fa-warning"></i></div>
-                <div class="text"><p>本文最后编辑于 <time datetime="1666702850448"></time> 前，其中的内容可能需要更新。</p></div>
+                <div class="text"><p>本文最后编辑于 <time datetime="1667308360787"></time> 前，其中的内容可能需要更新。</p></div>
             </div>
             
             
             <hr />
             <div itemprop="articleBody"><p>在此前，我们了解了sql注入是什么，接下来将在sqlilab进行实战</p>
 <p>首先，我们打开sqlilab的第一关<br><img src="https://raw.githubusercontent.com/amanokuya/nyaru.github.io/main/%40B%7D5PR0U~_HLKGEV%5BM8VZ)5.png" width="700" height="700"></p>
-<p>我们首先输入 <code>id=1</code> 和 <code>?id=1 and 1=2</code> 发现并没有出现报错,再试着往里面加入符号<br>输入<code>;</code>时也没发生报错 一个个试过去后发现输入<code>&#39;</code>时会报错</p>
+<p>我们首先输入 <code>?id=1</code> 和 <code>?id=1 and 1=2</code> 发现并没有出现报错,再试着往里面加入符号<br>输入<code>;</code>时也没发生报错 一个个试过去后发现输入<code>&#39;</code>时会报错<br><code>You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &#39;&#39; LIMIT 0,1&#39; at line 1</code><br>接下来我们判断表格有几列<br><code>?id=1&#39;order by 1--+</code>发现在<code>4</code>时回显错误，一共有三列<br>&lt;img src&#x3D;”<a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/amanokuya/AceTaffy.github.io/main/%7DOZ1J8Y3JS0X">https://raw.githubusercontent.com/amanokuya/AceTaffy.github.io/main/%7DOZ1J8Y3JS0X</a>(%5DY4C5F%25N%7BF.png”width&#x3D;”700”height&#x3D;”600”&gt;</p>
 </div>
         </div>
         
@@ -237,7 +237,7 @@
             const title         = "「sqlilab1」";
             const excerpt       = `在此前，我们了解了sql注入是什么，接下来将在sqlilab进行实战
 首先，我们打开sqlilab的第一关
-我们首先输入 id=1 和 ?id=1 and 1=2 发现并没有出现报错,再试着往里面加入符号输入;时也没发生报错 一个个试...`;
+我们首先输入 ?id=1 和 ?id=1 and 1=2 发现并没有出现报错,再试着往里面加入符号输入;时也没发生报错 一个个...`;
             let _URL;
             switch (dest) {
                 case "qq"       : _URL = qqBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";     break;
@@ -259,7 +259,7 @@
                     
                 </div>
                 <div class="pull-date">
-                    <time datetime="2022-10-25T13:00:50.448Z" itemprop="dateModified">最后编辑：2022-10-25</time>
+                    <time datetime="2022-11-01T13:12:40.787Z" itemprop="dateModified">最后编辑：2022-11-01</time>
                 </div>
             </div>
         </footer>
@@ -310,7 +310,7 @@
                 文章
             </span>
             <span class="count">
-                14
+                15
             </span>
         </a>
         <a class="meta-item" href="/categories/">
@@ -355,6 +355,12 @@
         
           
           
+            <a class="list-group-item" href="/2022/11/22/MySQL-0/"><i class="fa  fa-book"></i> MySQL</a>
+            
+          
+        
+          
+          
             <a class="list-group-item" href="/2022/10/28/MYSQL/"><i class="fa  fa-book"></i> MYSQL</a>
             
           
@@ -378,11 +384,7 @@
           
         
           
-          
-            <a class="list-group-item" href="/2022/10/18/base/"><i class="fa  fa-book"></i> base</a>
             
-          
-        
           
             
           
