@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/amanokuya/AceTaffy.github.io/main/S%5B0%7BK2%403300I74%5BX6~%604A8H.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/amanokuya/AceTaffy.github.io/main/T%25H%60YB)YURPC85DUICS9E%5DN.png">
 <meta property="article:published_time" content="2023-01-11T04:21:22.000Z">
-<meta property="article:modified_time" content="2023-03-26T07:33:49.224Z">
+<meta property="article:modified_time" content="2023-03-29T09:00:59.217Z">
 <meta property="article:author" content="amanokuya">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/amanokuya/AceTaffy.github.io/main/TRLPNP)QBF7(%7BO)%40W0HNR_R.png">
@@ -154,7 +154,7 @@
                     <i class="fa fa-edit"></i> 
                     
                     
-                        946
+                        1281
                     
                     字
                 </li>
@@ -165,7 +165,7 @@
             
             <div id="expire-alert" class="alert alert-warning hidden" role="alert">
                 <div class="icon"><i class="fa fa-warning"></i></div>
-                <div class="text"><p>本文最后编辑于 <time datetime="1679816029224"></time> 前，其中的内容可能需要更新。</p></div>
+                <div class="text"><p>本文最后编辑于 <time datetime="1680080459217"></time> 前，其中的内容可能需要更新。</p></div>
             </div>
             
             
@@ -202,7 +202,10 @@
 <hr/>
 
 <h5 id="weak-auth"><a href="#weak-auth" class="headerlink" title="weak_auth"></a>weak_auth</h5><p>查看网页源代码，看到<code>check.php</code>尝试输入，输入后得到的网页源代码里面<code>&lt;!--maybe you need a dictionary--&gt;</code>得知需用字典，但是还缺失用户名。按下login获得<code>please login as admin</code><br>因此用户名大概为<code>admin</code>接下来用bp爆破，返回长度不一样的就是</p>
-<hr/></div>
+<hr/>
+
+<h5 id="Simple-SSTI-1"><a href="#Simple-SSTI-1" class="headerlink" title="Simple_SSTI_1"></a>Simple_SSTI_1</h5><p>开局我们获得提示<code>You need pass in a parameter named flag。</code>  <code>&lt;!-- You know, in the flask, We often set a secret_key variable.--&gt;</code><br>要传入参数为<code>flag</code> 变量为<code>secret_key</code> 尝试构造<code>/?flag=secret_key</code> 返回 <code>secret_key</code> 失败了<br>查询后了解到<code>SSTI</code>是模板注入，按网站内举的例子模仿一下，构造<code>/?flag=&#123;&#123;.SECRET_KEY&#125;&#125;</code> 最后看评论区答案得知<code>/?flag=&#123;&#123;config.SECRET_KEY&#125;&#125;</code></p>
+</div>
         </div>
         
             <div class="kratos-copyright text-center clearfix">
@@ -294,7 +297,7 @@ get_posthttp的两种请求方法 get和postget–从指定资源请求数据pos
                     
                 </div>
                 <div class="pull-date">
-                    <time datetime="2023-03-26T07:33:49.224Z" itemprop="dateModified">最后编辑：2023-03-26</time>
+                    <time datetime="2023-03-29T09:00:59.217Z" itemprop="dateModified">最后编辑：2023-03-29</time>
                 </div>
             </div>
         </footer>
