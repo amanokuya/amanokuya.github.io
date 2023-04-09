@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/amanokuya/AceTaffy.github.io/main/S%5B0%7BK2%403300I74%5BX6~%604A8H.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/amanokuya/AceTaffy.github.io/main/T%25H%60YB)YURPC85DUICS9E%5DN.png">
 <meta property="article:published_time" content="2023-01-11T04:21:22.000Z">
-<meta property="article:modified_time" content="2023-04-03T09:46:18.811Z">
+<meta property="article:modified_time" content="2023-04-09T14:10:48.384Z">
 <meta property="article:author" content="amanokuya">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/amanokuya/AceTaffy.github.io/main/TRLPNP)QBF7(%7BO)%40W0HNR_R.png">
@@ -154,7 +154,7 @@
                     <i class="fa fa-edit"></i> 
                     
                     
-                        1387
+                        ~2.84K
                     
                     字
                 </li>
@@ -165,7 +165,7 @@
             
             <div id="expire-alert" class="alert alert-warning hidden" role="alert">
                 <div class="icon"><i class="fa fa-warning"></i></div>
-                <div class="text"><p>本文最后编辑于 <time datetime="1680515178811"></time> 前，其中的内容可能需要更新。</p></div>
+                <div class="text"><p>本文最后编辑于 <time datetime="1681049448384"></time> 前，其中的内容可能需要更新。</p></div>
             </div>
             
             
@@ -208,6 +208,11 @@
 <hr/>
 
 <h5 id="ics-06"><a href="#ics-06" class="headerlink" title="ics-06"></a>ics-06</h5><p>进入页面后，发现只有<code>报表中心</code>页面不一样，并且下面写着<code>送分题</code>，日期和网页代码并未发现问题，尝试从<code>/index.php?id=1</code>处入手，用bp爆破，发现当<code>id=2333</code>时返回长度不一样，得到flag</p>
+<hr/>
+
+<h5 id="simple-js"><a href="#simple-js" class="headerlink" title="simple_js"></a>simple_js</h5><p>进入页面要我们输入<code>password</code>，F12后找到</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">function dechiffre(pass_enc)&#123;</span><br><span class="line">    var pass = &quot;70,65,85,88,32,80,65,83,83,87,79,82,68,32,72,65,72,65&quot;;</span><br><span class="line">    var tab  = pass_enc.split(&#x27;,&#x27;);</span><br><span class="line">            var tab2 = pass.split(&#x27;,&#x27;);var i,j,k,l=0,m,n,o,p = &quot;&quot;;i = 0;j = tab.length;</span><br><span class="line">                    k = j + (l) + (n=0);</span><br><span class="line">                    n = tab2.length;</span><br><span class="line">                    for(i = (o=0); i &lt; (k = j = n); i++ )&#123;o = tab[i-l];p += String.fromCharCode((o = tab2[i]));</span><br><span class="line">                            if(i == 5)break;&#125;</span><br><span class="line">                    for(i = (o=0); i &lt; (k = j = n); i++ )&#123;</span><br><span class="line">                    o = tab[i-l];</span><br><span class="line">                            if(i &gt; 5 &amp;&amp; i &lt; k-1)</span><br><span class="line">                                    p += String.fromCharCode((o = tab2[i]));</span><br><span class="line">                    &#125;</span><br><span class="line">    p += String.fromCharCode(tab2[17]);</span><br><span class="line">    pass = p;return pass;</span><br><span class="line">&#125;</span><br><span class="line">String[&quot;fromCharCode&quot;](dechiffre(&quot;\x35\x35\x2c\x35\x36\x2c\x35\x34\x2c\x37\x39\x2c\x31\x31\x35\x2c\x36\x39\x2c\x31\x31\x34\x2c\x31\x31\x36\x2c\x31\x30\x37\x2c\x34\x39\x2c\x35\x30&quot;));</span><br><span class="line"></span><br><span class="line">h = window.prompt(&#x27;Enter password&#x27;);</span><br><span class="line">alert( dechiffre(h) );</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><code>\x35\x35\x2c\x35\x36\x2c\x35\x34\x2c\x37\x39\x2c\x31\x31\x35\x2c\x36\x39\x2c\x31\x31\x34\x2c\x31\x31\x36\x2c\x31\x30\x37\x2c\x34\x39\x2c\x35\x30</code><br>之前见过，是16进制，转换为字符<code>55,56,54,79,115,69,114,116,107,49,50</code>但输入进去显示<code>FAUX PASSWORD HAHA</code>,查询答案后得知，输入得不到flag，要转换成ascii后套入flag格式<br><code>786OsErtk12</code></p>
 </div>
         </div>
         
@@ -300,7 +305,7 @@ get_posthttp的两种请求方法 get和postget–从指定资源请求数据pos
                     
                 </div>
                 <div class="pull-date">
-                    <time datetime="2023-04-03T09:46:18.811Z" itemprop="dateModified">最后编辑：2023-04-03</time>
+                    <time datetime="2023-04-09T14:10:48.384Z" itemprop="dateModified">最后编辑：2023-04-09</time>
                 </div>
             </div>
         </footer>
