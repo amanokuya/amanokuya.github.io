@@ -36,7 +36,7 @@
 <meta property="og:image" content="https://github.com/amanokuya/AceTaffy.github.io/blob/main/7_D82X%5BN0PME%60PZS6$0V~%5DM.png?raw=true">
 <meta property="og:image" content="https://github.com/amanokuya/AceTaffy.github.io/blob/main/42$V6K_D6Y%259E~P6%60ELI6C5.png?raw=true">
 <meta property="article:published_time" content="2023-07-31T07:37:20.000Z">
-<meta property="article:modified_time" content="2023-08-02T13:30:35.600Z">
+<meta property="article:modified_time" content="2023-08-04T13:56:05.159Z">
 <meta property="article:author" content="amanokuya">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://github.com/amanokuya/AceTaffy.github.io/blob/main/4OBT_D~)%60UQV%5BI9WZJ6N1(8.png?raw=true">
@@ -160,7 +160,7 @@
                     <i class="fa fa-edit"></i> 
                     
                     
-                        ~1.70K
+                        ~2.71K
                     
                     字
                 </li>
@@ -171,7 +171,7 @@
             
             <div id="expire-alert" class="alert alert-warning hidden" role="alert">
                 <div class="icon"><i class="fa fa-warning"></i></div>
-                <div class="text"><p>本文最后编辑于 <time datetime="1690983035600"></time> 前，其中的内容可能需要更新。</p></div>
+                <div class="text"><p>本文最后编辑于 <time datetime="1691157365159"></time> 前，其中的内容可能需要更新。</p></div>
             </div>
             
             
@@ -183,17 +183,34 @@
 <p><code>flag=NSSCTF&#123;ff7202ac-599c-4401-85d4-b4d7c47a4636&#125;</code></p>
 <h3 id="Flag点击就送！"><a href="#Flag点击就送！" class="headerlink" title="Flag点击就送！"></a>Flag点击就送！</h3><p>查看网页cookie<code>eyJuYW1lIjoibmFtZSJ9.ZMeS1Q.NR1OCPWmPeSWEJ4-m3c8m-qehb4</code><br>好像出问题了，重启后得到<code>eyJuYW1lIjoibmFlbSJ9.ZMeiXw.daPMph6hBI2FRkMcL3Ta2aO3rW0</code><br>属于flask session伪造<br><code>内容序列化.时间.反篡改值</code><br>base64解密后<br><code>&#123;&quot;name&quot;:&quot;naem&quot;&#125;.d洽_.uＬ??崊FC/t谫７璵</code><br>由题目<code>不过只有管理员才能拿到</code><br>尝试把<code>naem</code>改成<code>admin</code>试试<br>获得<code>eyJuYW1lIjoiYWRtaW4ifQ==</code><br>似乎不对<br><img src='https://github.com/amanokuya/AceTaffy.github.io/blob/main/7A%5BE4AP%60%5D4A2CHYK5HR4D%7BU.png?raw=true'></p>
 <p>看wp。原来是 <code>LitCTF</code><br>获得 <code>eyJuYW1lIjoiTGl0Q1RGIn0=</code><br><img src='https://github.com/amanokuya/AceTaffy.github.io/blob/main/0~@85W0%25D9LEU@_4V%60$$U8I.png?raw=true'><br>啊？</p>
-<h3 id="1zjs"><a href="#1zjs" class="headerlink" title="1zjs"></a>1zjs</h3><p>在调试器里面搜索，找到<code>PERFORMANCE OF THIS SOFTWARE.Your gift just take it : /f@k3f1ag.php</code><br>或者用burpsuit直接扫出这个页面，获得一大串<br><img src='https://github.com/amanokuya/AceTaffy.github.io/blob/main/BY$(@H0R_%7B4VCU3LG%25CU6CB.png?raw=true'><br>是jsfuck编码，解密后获得</p>
+<h3 id="1zjs"><a href="#1zjs" class="headerlink" title="1zjs"></a>1zjs</h3><p>在调试器里面搜索，找到<code>PERFORMANCE OF THIS SOFTWARE.Your gift just take it : /f@k3f1ag.php</code></p>
+<img src='https://github.com/amanokuya/AceTaffy.github.io/blob/main/BY$(@H0R_%7B4VCU3LG%25CU6CB.png?raw=true'>
+是jsfuck编码，解密后获得
+ 
 <p><code>NSSCTF&#123;e9[]0[]ca7[]1[]c-c4[]5[]e-4[]bb0[]-9[]0[]bd-1[]0[]5[]b5[]f8[]2[]9[]5[]d9[]&#125;</code><br><code>NSSCTF&#123;e90ca71c-c45e-4bb0-90bd-105b5f8295d9&#125;</code></p>
 <h3 id="作业管理系统"><a href="#作业管理系统" class="headerlink" title="作业管理系统"></a>作业管理系统</h3><p>根据提示，用户名和密码都是admin<br>登录后又看到提示<br><img src='https://github.com/amanokuya/AceTaffy.github.io/blob/main/F%7D2BC0V16~8$_9%5B7AKDYF4E.png?raw=true'><br>进入后获得彩蛋</p>
 <p><code>wow 你找到了第二个彩蛋哦~      _S0_ne3t? (2/?)</code><br>上传下webshell<br><code>&lt;?php @eval($_POST[&#39;cmd&#39;]);?&gt;</code><br>蚁剑连接后获得<br><img src='https://github.com/amanokuya/AceTaffy.github.io/blob/main/4TFI@TB%7D2_4%5BIPL30U79KOG.png?raw=true'></p>
-<h3 id="Http-pro-max-plus"><a href="#Http-pro-max-plus" class="headerlink" title="Http pro max plus"></a>Http pro max plus</h3><h3 id="Vim-yyds"><a href="#Vim-yyds" class="headerlink" title="Vim yyds"></a>Vim yyds</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Vim是linux中的常用编辑器</span><br><span class="line">vim中的swp即swap文件，在编辑文件时产生，它是隐藏文件，如果程序正常退出，临时文件自动删除，如果意外退出就会保留，文件名为 .filename.swp，（第一次产生的交换文件名为“.filename.txt.swp”；再次意外退出后，将会产生名为“.filename.txt.swo”的交换文件；而第三次产生的交换文件则为“.filename.txt.swn”）</span><br><span class="line">备份文件名为 filename~</span><br></pre></td></tr></table></figure>
+<h3 id="Http-pro-max-plus"><a href="#Http-pro-max-plus" class="headerlink" title="Http pro max plus"></a>Http pro max plus</h3><p><code>只允许本地访问</code>尝试在请求头加上<code>x-Forwarded-For:127.0.0.1</code>,结果获得<code>只会xff？真是逊呐</code><br>除xff外，还可以通过<code>Client-Ip</code>来伪造IP,获得<code>You are not from pornhub.com !</code><br>通过<code>referer:pronhub.com</code>进行下一步<br>获得<code>用Chorme浏览器啊！</code> 将<code>User-Agent</code>里面改成<code>Chrome</code><br>接下来又要求开代理，使用<code>Via</code>来达到目的<br>获得<code>/wtfwtfwtfwtf.php</code><br>进入页面后F12<code>你就冲吧，什么都冲只会害了你自己 bdy好康的在 /sejishikong.php</code><br><code>冲完啦？拿上你的flag赶紧走NSSCTF&#123;199352b3-f5ba-48c3-93d2-72094f09a32f&#125;</code></p>
+<h3 id="Vim-yyds"><a href="#Vim-yyds" class="headerlink" title="Vim yyds"></a>Vim yyds</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Vim是linux中的常用编辑器</span><br><span class="line">vim中的swp即swap文件，在编辑文件时产生，它是隐藏文件，如果程序正常退出，临时文件自动删除，如果意外退出就会保留，文件名为 .filename.swp，（第一次产生的交换文件名为“.filename.txt.swp”；再次意外退出后，将会产生名为“.filename.txt.swo”的交换文件；而第三次产生的交换文件则为“.filename.txt.swn”）</span><br><span class="line">备份文件名为 filename~</span><br></pre></td></tr></table></figure>
 
 <p><code>/.index.php.swp</code><br>获得</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">eval</span>(system(<span class="variable">$_POST</span>[<span class="string">&#x27;cmd&#x27;</span>]));.  </span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;&lt;p&gt;Oh You got my password!&lt;/p&gt;&quot;</span>;.            </span><br><span class="line"><span class="keyword">if</span> (<span class="variable">$_POST</span>[<span class="string">&#x27;password&#x27;</span>] === base64_encode(<span class="variable">$password</span>)) &#123;.            </span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;&lt;p&gt;can can need Vim &lt;/p&gt;&quot;</span>;.            </span><br><span class="line"><span class="variable">$password</span> = <span class="string">&quot;Give_Me_Your_Flag&quot;</span>;.        </span><br></pre></td></tr></table></figure>
 <p>password编码后得到<code>R2l2ZV9NZV9Zb3VyX0ZsYWc=</code><br><img src='https://github.com/amanokuya/AceTaffy.github.io/blob/main/7_D82X%5BN0PME%60PZS6$0V~%5DM.png?raw=true'><br><img src='https://github.com/amanokuya/AceTaffy.github.io/blob/main/42$V6K_D6Y%259E~P6%60ELI6C5.png?raw=true'></p>
+<hr/>
+<br>
+<hr/>
+
 <h3 id="原来你也玩原神-初级"><a href="#原来你也玩原神-初级" class="headerlink" title="原来你也玩原神 (初级)"></a>原来你也玩原神 (初级)</h3><p>原来你也玩原神www</p>
-</div>
+<hr/>
+<br>
+<hr/>
+
+<h3 id="世界上最棒的程序员"><a href="#世界上最棒的程序员" class="headerlink" title="世界上最棒的程序员"></a>世界上最棒的程序员</h3><p>flag位于<code>_start</code> <code>Flag: LitCTF&#123;I_am_the_best_programmer_ever&#125;</code></p>
+<h3 id="ez-XOR"><a href="#ez-XOR" class="headerlink" title="ez_XOR"></a>ez_XOR</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">__main();</span><br><span class="line"> strcpy(Str2, <span class="string">&quot;E`&#125;J]OrQF[V8zV:hzpV&#125;fVF[t&quot;</span>);</span><br><span class="line"> v9 = 0;</span><br><span class="line"> v10 = 0;</span><br><span class="line"> v11 = 0;</span><br><span class="line"> v12 = 0;</span><br><span class="line"> v13 = 0;</span><br><span class="line"> v14 = 0;</span><br><span class="line"> v15 = 0;</span><br><span class="line"> <span class="built_in">printf</span>(<span class="string">&quot;Enter The Right FLAG:&quot;</span>);</span><br><span class="line"> scanf(<span class="string">&quot;%s&quot;</span>, Str1);</span><br><span class="line"> XOR(Str1, 3);</span><br></pre></td></tr></table></figure>
+<p>进入<code>_XOR</code>查看</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">size_t __cdecl XOR(char *Str, char a2)</span><br><span class="line">&#123;</span><br><span class="line">  size_t result; // eax</span><br><span class="line">  size_t i; // [esp+2Ch] [ebp-Ch]</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> ( i = 0; ; ++i )</span><br><span class="line">  &#123;</span><br><span class="line">    result = strlen(Str);</span><br><span class="line">    <span class="keyword">if</span> ( i &gt;= result )</span><br><span class="line">      <span class="built_in">break</span>;</span><br><span class="line">    Str[i] ^= 3 * a2;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>得知，以<code>9</code>为密钥，对<code>E&#125;J]OrQF[V8zV:hzpV&#125;fVF[t</code>进行解密<br>获得<code>LitCTF&#123;XOR_1s_3asy_to_OR&#125;</code></p>
+<h3 id="enbase64"><a href="#enbase64" class="headerlink" title="enbase64"></a>enbase64</h3></div>
         </div>
         
             <div class="kratos-copyright text-center clearfix">
@@ -284,7 +301,7 @@ PHP是世界上最好的语言！...`;
                     
                 </div>
                 <div class="pull-date">
-                    <time datetime="2023-08-02T13:30:35.600Z" itemprop="dateModified">最后编辑：2023-08-02</time>
+                    <time datetime="2023-08-04T13:56:05.159Z" itemprop="dateModified">最后编辑：2023-08-04</time>
                 </div>
             </div>
         </footer>
