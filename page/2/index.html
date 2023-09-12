@@ -314,8 +314,7 @@ SCHEMATA:所有数据库信息  schema_nameTABLES:所有表信息  table_na...
                         <p itemProp="description">
                             
                                 1首先，打开sqlilab的第一关
-1.判断注入点“Please input the ID as parameter with numeric value”
-
+?id=1 回显正常 ?id=1&#39;报错 ?id=1 --+正常 ?id=1&#39; order by 3--+正常 ?id=1&#39; order by 4--+报错，字段数为 3?id...
                             
                         </p>
                     </div>
