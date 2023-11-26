@@ -16,15 +16,15 @@
   
     <meta name="keywords" content="" />
   
-  <meta name="description" content="首次适应算法例如有4个作业，分别为200k,500k,400k,600k,有如下空闲区（自下往上查找）    500k    200k   600k   400k   1.为200k分配空间：   找到400k，剩200k  2.为500k分配空间：    找到600k，剩100k3.为400k分配空间：    找到500k，剩100k4.为600k分配空间：    找不到，等待其他作业释放 即在">
+  <meta name="description" content="首次适应算法例如有4个作业，分别为200k,500k,400k,600k,有如下空闲区（自下往上查找）|500k||200k||600k||400k| 1.为200k分配空间：    找到400k，剩200k2.为500k分配空间：    找到600k，剩100k3.为400k分配空间：    找到500k，剩100k4.为600k分配空间：    找不到，等待其他作业释放 即在查找的时候碰到合适">
 <meta property="og:type" content="article">
 <meta property="og:title" content="最佳适应算法">
 <meta property="og:url" content="https://amanokuya.github.io/2023/11/26/%E6%9C%80%E4%BD%B3%E9%80%82%E5%BA%94%E7%AE%97%E6%B3%95/index.html">
 <meta property="og:site_name" content="AceNyaRu">
-<meta property="og:description" content="首次适应算法例如有4个作业，分别为200k,500k,400k,600k,有如下空闲区（自下往上查找）    500k    200k   600k   400k   1.为200k分配空间：   找到400k，剩200k  2.为500k分配空间：    找到600k，剩100k3.为400k分配空间：    找到500k，剩100k4.为600k分配空间：    找不到，等待其他作业释放 即在">
+<meta property="og:description" content="首次适应算法例如有4个作业，分别为200k,500k,400k,600k,有如下空闲区（自下往上查找）|500k||200k||600k||400k| 1.为200k分配空间：    找到400k，剩200k2.为500k分配空间：    找到600k，剩100k3.为400k分配空间：    找到500k，剩100k4.为600k分配空间：    找不到，等待其他作业释放 即在查找的时候碰到合适">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-11-26T12:50:41.000Z">
-<meta property="article:modified_time" content="2023-11-26T13:34:45.147Z">
+<meta property="article:modified_time" content="2023-11-26T14:06:36.425Z">
 <meta property="article:author" content="amanokuya">
 <meta name="twitter:card" content="summary">
   
@@ -147,7 +147,7 @@
                     <i class="fa fa-edit"></i> 
                     
                     
-                        ~2.16K
+                        ~2.15K
                     
                     字
                 </li>
@@ -158,34 +158,13 @@
             
             <div id="expire-alert" class="alert alert-warning hidden" role="alert">
                 <div class="icon"><i class="fa fa-warning"></i></div>
-                <div class="text"><p>本文最后编辑于 <time datetime="1701005685147"></time> 前，其中的内容可能需要更新。</p></div>
+                <div class="text"><p>本文最后编辑于 <time datetime="1701007596425"></time> 前，其中的内容可能需要更新。</p></div>
             </div>
             
             
             <hr />
-            <div itemprop="articleBody"><h3 id="首次适应算法"><a href="#首次适应算法" class="headerlink" title="首次适应算法"></a>首次适应算法</h3><p>例如有4个作业，分别为200k,500k,400k,600k,有如下空闲区（自下往上查找）</p>
-<table>
-<thead>
-<tr>
-<th align="center">500k</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">200k</td>
-</tr>
-<tr>
-<td align="center">600k</td>
-</tr>
-<tr>
-<td align="center">400k</td>
-</tr>
-<tr>
-<td align="center">1.为200k分配空间：</td>
-</tr>
-</tbody></table>
-<pre><code>找到400k，剩200k
-</code></pre>
-<p>2.为500k分配空间：<br>    找到600k，剩100k<br>3.为400k分配空间：<br>    找到500k，剩100k<br>4.为600k分配空间：<br>    找不到，等待其他作业释放</p>
+            <div itemprop="articleBody"><h3 id="首次适应算法"><a href="#首次适应算法" class="headerlink" title="首次适应算法"></a>首次适应算法</h3><p>例如有4个作业，分别为200k,500k,400k,600k,有如下空闲区（自下往上查找）<br>|500k|<br>|200k|<br>|600k|<br>|400k|</p>
+<p>1.为200k分配空间：<br>    找到400k，剩200k<br>2.为500k分配空间：<br>    找到600k，剩100k<br>3.为400k分配空间：<br>    找到500k，剩100k<br>4.为600k分配空间：<br>    找不到，等待其他作业释放</p>
 <p>即在查找的时候碰到合适的空闲区就分配</p>
 <h3 id="最佳适应算法"><a href="#最佳适应算法" class="headerlink" title="最佳适应算法"></a>最佳适应算法</h3><p>例子同上<br>1.为200k分配空间：<br>    找到200k，剩0k<br>2.为500k：<br>    找到500k<br>3.为400k：<br>    找到400k<br>4.为600k：<br>    找到600k<br>即将剩余的空闲区域控制到最小</p>
 <h3 id="最坏适应算法"><a href="#最坏适应算法" class="headerlink" title="最坏适应算法"></a>最坏适应算法</h3><p>和最佳适应算法相反</p>
@@ -259,29 +238,8 @@
             const twitterBase   = "https://twitter.com/intent/tweet?";
             const hostUrl       = "https://amanokuya.github.io/2023/11/26/%E6%9C%80%E4%BD%B3%E9%80%82%E5%BA%94%E7%AE%97%E6%B3%95/";
             const title         = "「最佳适应算法」";
-            const excerpt       = `首次适应算法例如有4个作业，分别为200k,500k,400k,600k,有如下空闲区（自下往上查找）
-
-
-
-500k
-
-
-
-200k
-
-
-600k
-
-
-400k
-
-
-1.为200k分配空间：
-
-
-找到400k，剩200k
-
-2.为5...`;
+            const excerpt       = `首次适应算法例如有4个作业，分别为200k,500k,400k,600k,有如下空闲区（自下往上查找）|500k||200k||600k||400k|
+1.为200k分配空间：    找到400k，剩200k2.为500k分配空间： ...`;
             let _URL;
             switch (dest) {
                 case "qq"       : _URL = qqBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";     break;
@@ -303,7 +261,7 @@
                     
                 </div>
                 <div class="pull-date">
-                    <time datetime="2023-11-26T13:34:45.147Z" itemprop="dateModified">最后编辑：2023-11-26</time>
+                    <time datetime="2023-11-26T14:06:36.425Z" itemprop="dateModified">最后编辑：2023-11-26</time>
                 </div>
             </div>
         </footer>
