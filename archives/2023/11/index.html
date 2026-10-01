@@ -482,5 +482,19 @@
 <!-- Extra support for third-party plguins  -->
 
 
-    </body>
+    <!-- hexo injector body_end start --><script>
+(function () {
+  var SEL = 'a[href="/apng-studio/"], a[href="/apng-studio"]';
+  function fix(a) { a.setAttribute("target", "_blank"); a.setAttribute("rel", "noopener noreferrer"); }
+  function run() { Array.prototype.forEach.call(document.querySelectorAll(SEL), fix); }
+  run();
+  document.addEventListener("DOMContentLoaded", run);
+  window.addEventListener("load", run);
+  document.addEventListener("click", function (e) {
+    var t = e.target;
+    var a = t && t.closest ? t.closest(SEL) : null;
+    if (a) fix(a);
+  }, true);
+})();
+</script><!-- hexo injector body_end end --></body>
 </html>

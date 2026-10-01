@@ -146,10 +146,10 @@
 <div id="result-posts">
     <div class="kratos-hentry kratos-post-inner clearfix">
         <div class="kratos-post-content">
-            <p>搜索多个关键词时请用空格分割，例如「C HTML PHP」这样；</p>
+            <p>搜索多个关键词时请用空格分割，例如「HTML C PHP」这样；</p>
             <p>您也可以使用这些标签碰碰运气哦~</p>
             <p class="search-demo-tags">
-                <a href="/tags/C/" style="font-size: 18px; color: #b2b7be">C</a> <a href="/tags/HTML/" style="font-size: 24px; color: #6c7588">HTML</a> <a href="/tags/PHP/" style="font-size: 24px; color: #6c7588">PHP</a> <a href="/tags/sqlilab/" style="font-size: 24px; color: #6c7588">sqlilab</a>
+                <a href="/tags/HTML/" style="font-size: 24px; color: #6c7588">HTML</a> <a href="/tags/C/" style="font-size: 18px; color: #b2b7be">C</a> <a href="/tags/PHP/" style="font-size: 24px; color: #6c7588">PHP</a> <a href="/tags/sqlilab/" style="font-size: 24px; color: #6c7588">sqlilab</a>
             </p>
         </div>
     </div>
@@ -417,5 +417,19 @@
 <!-- Extra support for third-party plguins  -->
 
 
-    </body>
+    <!-- hexo injector body_end start --><script>
+(function () {
+  var SEL = 'a[href="/apng-studio/"], a[href="/apng-studio"]';
+  function fix(a) { a.setAttribute("target", "_blank"); a.setAttribute("rel", "noopener noreferrer"); }
+  function run() { Array.prototype.forEach.call(document.querySelectorAll(SEL), fix); }
+  run();
+  document.addEventListener("DOMContentLoaded", run);
+  window.addEventListener("load", run);
+  document.addEventListener("click", function (e) {
+    var t = e.target;
+    var a = t && t.closest ? t.closest(SEL) : null;
+    if (a) fix(a);
+  }, true);
+})();
+</script><!-- hexo injector body_end end --></body>
 </html>
