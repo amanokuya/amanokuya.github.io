@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>APNG 伪装图工作室(本地运行)</title>
+<style>
+  :root { --bg:#111418; --card:#1b2026; --line:#2a323b; --txt:#e8edf2; --dim:#8b97a3; --acc:#4da3ff; --ok:#3fce7a; --err:#ff6b6b; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--txt); font:14px/1.6 "Segoe UI",system-ui,"Microsoft YaHei",sans-serif; }
+  .wrap { max-width:1060px; margin:0 auto; padding:24px 16px 60px; }
+  h1 { font-size:20px; margin:0 0 4px; }
+  .sub { color:var(--dim); font-size:12px; margin-bottom:20px; }
+  .tabs { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+  .tabs button { background:var(--card); border:1px solid var(--line); color:var(--dim); padding:8px 18px; border-radius:8px; cursor:pointer; font-size:14px; }
+  .tabs button.on { color:var(--txt); border-color:var(--acc); background:#20304a; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px; margin-bottom:16px; }
+  .card h2 { font-size:15px; margin:0 0 12px; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:720px){ .grid2{ grid-template-columns:1fr; } }
+  .drop { border:2px dashed var(--line); border-radius:10px; padding:14px; text-align:center; cursor:pointer; transition:.15s; min-height:150px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; }
+  .drop:hover,.drop.over { border-color:var(--acc); background:#20304a33; }
+  .drop.has { border-style:solid; }
+  .drop img { max-width:100%; max-height:220px; border-radius:6px; }
+  .drop .hint { color:var(--dim); font-size:12px; }
+  .row { display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; margin-top:14px; }
+  label.f { display:flex; flex-direction:column; gap:4px; font-size:12px; color:var(--dim); }
+  input[type=number], input[type=text] { background:#0d1013; border:1px solid var(--line); color:var(--txt); border-radius:6px; padding:6px 8px; width:110px; }
+  input[type=text].wide { width:220px; }
+  select { background:#0d1013; border:1px solid var(--line); color:var(--txt); border-radius:6px; padding:6px 8px; }
+  .check { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--dim); padding-bottom:9px; }
+  .check input { width:auto; }
+  button.go { background:var(--acc); color:#08111c; font-weight:600; border:0; border-radius:8px; padding:10px 22px; cursor:pointer; font-size:14px; }
+  button.go:disabled { opacity:.4; cursor:not-allowed; }
+  .msg { margin-top:12px; font-size:13px; min-height:20px; }
+  .msg.ok { color:var(--ok); } .msg.err { color:var(--err); } .msg.dim { color:var(--dim); }
+  .previews { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:16px; }
+  @media (max-width:720px){ .previews{ grid-template-columns:1fr; } }
+  .pv { background:#0d1013; border:1px solid var(--line); border-radius:8px; padding:10px; text-align:center; }
+  .pv .t { font-size:12px; color:var(--dim); margin-bottom:6px; }
+  .pv img { max-width:100%; max-height:240px; }
+  .frames { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px; margin-top:14px; }
+  .fr { background:#0d1013; border:1px solid var(--line); border-radius:8px; padding:8px; text-align:center; }
+  .fr img { max-width:100%; max-height:180px; }
+  .fr .meta { font-size:11px; color:var(--dim); word-break:break-all; margin:6px 0; }
+  .fr a { color:var(--acc); font-size:12px; }
+  .tag { display:inline-block; background:#3a2b12; color:#ffb84d; border:1px solid #6b4c1a; border-radius:4px; padding:1px 6px; font-size:11px; margin:2px; }
+  .kbig { font-size:13px; color:var(--dim); } .kbig b { color:var(--txt); }
+  .foot { color:var(--dim); font-size:11px; margin-top:24px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>APNG 伪装图工作室</h1>
+  <div class="sub">全程本地运行,图片不上传任何服务器 · 伪装合成 / 反向拆图 / GIF 转 APNG / PNG 与动图合成</div>
+
+  <div class="tabs">
+    <button id="tabMake" class="on">合成伪装图</button>
+    <button id="tabSplit">拆图提取真图</button>
+    <button id="tabGif">GIF 转 APNG</button>
+    <button id="tabMerge">PNG + 动图合成</button>
+  </div>
+
+  <!-- ============ 合成 ============ -->
+  <div id="paneMake">
+    <div class="card">
+      <h2>1. 放入两张图</h2>
+      <div class="grid2">
+        <div class="drop" id="dzDecoy">
+          <b>诱饵图(默认帧)</b>
+          <span class="hint">Windows 照片等不支持 APNG 的软件会显示这张</span>
+        </div>
+        <div class="drop" id="dzReal">
+          <b>原图(动画帧)</b>
+          <span class="hint">浏览器 / QQ 查看原图时显示这张,输出尺寸以它为准</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>2. 参数</h2>
+      <div class="row">
+        <label class="f">帧延时(毫秒)<input type="number" id="delayMs" value="100" min="10" max="65535"></label>
+        <label class="f">循环次数(0=无限)<input type="number" id="plays" value="0" min="0" max="65535"></label>
+        <label class="f">tEXt 标记名<input type="text" id="txtKey" class="wide" value="ChatBarApngDisguise"></label>
+        <label class="f">tEXt 标记值<input type="text" id="txtVal" class="wide" value="1;STATIC;1"></label>
+        <label class="f">最长边限制<select id="maxEdge"><option value="0">不限</option><option value="2048" selected>2048</option><option value="1600">1600</option><option value="1200">1200</option></select></label>
+        <label class="f">色彩<select id="colorMode"><option value="auto">自动更小</option><option value="rgba">RGBA(同样本)</option></select></label>
+        <label class="check"><input type="checkbox" id="decoyHalf" checked> 诱饵图省体积(半分辨率,照片应用里略糊)</label>
+        <button class="go" id="btnMake" disabled>合成并下载 APNG</button>
+      </div>
+      <div class="msg dim" id="makeMsg">两张图就绪后即可合成。分辨率是体积大头:大图建议最长边 2048;诱饵图会自动拉伸到原图尺寸。</div>
+      <div class="previews">
+        <div class="pv"><div class="t">不支持 APNG 的软件看到的(诱饵)</div><img id="pvDecoy" alt=""></div>
+        <div class="pv"><div class="t">浏览器 / QQ 看到的(真图)</div><img id="pvReal" alt=""></div>
+        <div class="pv"><div class="t">成品(若你的浏览器支持 APNG,显示的即是真图)</div><img id="pvOut" alt=""></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 拆图 ============ -->
+  <div id="paneSplit" style="display:none">
+    <div class="card">
+      <h2>拖入或选择一个 PNG / APNG 文件</h2>
+      <div class="drop" id="dzSplit">
+        <b>APNG 拆解器</b>
+        <span class="hint">列出所有帧并支持逐帧下载,顺便显示文件里的 tEXt 伪装标记</span>
+      </div>
+      <div class="msg dim" id="splitMsg"></div>
+      <div id="splitInfo"></div>
+      <div class="frames" id="frameList"></div>
+    </div>
+  </div>
+
+  <!-- ============ GIF 转 APNG ============ -->
+  <div id="paneGif" style="display:none">
+    <div class="card">
+      <h2>拖入或选择一个 GIF 文件</h2>
+      <div class="drop" id="dzGif">
+        <b>GIF 转 APNG</b>
+        <span class="hint">逐帧解码 GIF(透明色 / 帧处置 / interlaced 均已处理),输出无损 APNG</span>
+      </div>
+      <div class="msg dim" id="gifMsg">支持 GIF87a / GIF89a,解析后自动合成完整帧。</div>
+      <div id="gifInfo"></div>
+    </div>
+    <div class="card">
+      <h2>输出参数</h2>
+      <div class="row">
+        <label class="f">速度倍率<input type="number" id="gifSpeed" value="1" min="0.1" step="0.1"></label>
+        <label class="f">延时兜底(毫秒)<input type="number" id="gifDelay" value="100" min="10" max="65535"></label>
+        <label class="f">循环次数(0=无限)<input type="number" id="gifPlays" value="0" min="0" max="65535"></label>
+        <label class="f">最长边限制<select id="gifMaxEdge"><option value="0">不限</option><option value="2048" selected>2048</option><option value="1600">1600</option><option value="1200">1200</option><option value="800">800</option></select></label>
+        <label class="f">色彩<select id="gifColor"><option value="auto">自动更小</option><option value="rgba">RGBA</option></select></label>
+        <button class="go" id="btnGif" disabled>转换并下载 APNG</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="previews" style="grid-template-columns:1fr">
+        <div class="pv"><div class="t">成品预览(浏览器支持 APNG 时会动)</div><img id="gifOut" alt=""></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PNG + 动图合成 ============ -->
+  <div id="paneMerge" style="display:none">
+    <div class="card">
+      <h2>1. 放入 PNG 与动图(GIF 或 APNG)</h2>
+      <div class="grid2">
+        <div class="drop" id="dzMergePng"><b>静态 PNG</b><span class="hint">作背景 / 前景 / 首帧 / 伪装默认帧</span></div>
+        <div class="drop" id="dzMergeGif"><b>动图(GIF 或 APNG)</b><span class="hint">提供动画帧与延时,输出尺寸以它为准</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>2. 合成方式与参数</h2>
+      <div class="row">
+        <label class="f">合成方式<select id="mMode">
+          <option value="bg">PNG 作背景(PNG 在下)</option>
+          <option value="fg">PNG 作前景(叠加在每帧上)</option>
+          <option value="first">PNG 作首帧(后接动画)</option>
+          <option value="disguise">PNG 作默认帧(伪装:非 APNG 软件只显示 PNG)</option>
+        </select></label>
+        <label class="f">PNG 适配<select id="mFit"><option value="contain">等比缩放适应</option><option value="stretch">拉伸铺满</option><option value="none">原始尺寸居中</option></select></label>
+        <label class="f">PNG 不透明度(%)<input type="number" id="mAlpha" value="100" min="0" max="100"></label>
+        <label class="f">首帧延时(毫秒)<input type="number" id="mFirstDelay" value="100" min="10" max="65535"></label>
+        <label class="f">帧延时覆盖(毫秒,0=用原值)<input type="number" id="mDelay" value="0" min="0" max="65535"></label>
+        <label class="f">循环次数(0=无限)<input type="number" id="mPlays" value="0" min="0" max="65535"></label>
+        <label class="f">最长边限制<select id="mMaxEdge"><option value="0">不限</option><option value="2048" selected>2048</option><option value="1600">1600</option><option value="1200">1200</option></select></label>
+        <label class="f">色彩<select id="mColor"><option value="auto">自动更小</option><option value="rgba">RGBA</option></select></label>
+        <button class="go" id="btnMerge" disabled>合成并下载 APNG</button>
+      </div>
+      <div class="msg dim" id="mergeMsg">同时放入 PNG 与动图后即可合成。</div>
+      <div class="previews" style="grid-template-columns:1fr">
+        <div class="pv"><div class="t">成品预览</div><img id="mergeOut" alt=""></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">APNG 结构:默认图(IDAT)+ fcTL/fdAT 动画帧。非 APNG 解码器只渲染默认图 —— 伪装即利用此特性。拆图支持 8-bit RGBA/RGB 非隔行 PNG。</div>
+</div>
+
+<script>
+"use strict";
+/* ================= 基础工具 ================= */
+const $ = id => document.getElementById(id);
+const CRC_TABLE = (() => {
+  const t = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    t[n] = c >>> 0;
+  }
+  return t;
+})();
+function crc32(u8, start = 0, end = u8.length) {
+  let c = 0xFFFFFFFF;
+  for (let i = start; i < end; i++) c = CRC_TABLE[(c ^ u8[i]) & 0xFF] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+function u32(n) { return new Uint8Array([(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255]); }
+function u16(n) { return new Uint8Array([(n >> 8) & 255, n & 255]); }
+function concat(parts) {
+  const len = parts.reduce((s, p) => s + p.length, 0);
+  const out = new Uint8Array(len);
+  let o = 0;
+  for (const p of parts) { out.set(p, o); o += p.length; }
+  return out;
+}
+function strBytes(s) { const a = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) a[i] = s.charCodeAt(i) & 0xFF; return a; }
+function chunk(type, data) {
+  const t = strBytes(type);
+  const head = concat([u32(data.length), t]);
+  return concat([head, data, u32(crc32(concat([t, data])))]);
+}
+async function deflate(bytes) {
+  const cs = new CompressionStream("deflate");
+  const st = new Blob([bytes]).stream().pipeThrough(cs);
+  return new Uint8Array(await new Response(st).arrayBuffer());
+}
+async function inflate(bytes) {
+  const ds = new DecompressionStream("deflate");
+  const st = new Blob([bytes]).stream().pipeThrough(ds);
+  return new Uint8Array(await new Response(st).arrayBuffer());
+}
+
+/* ================= 编码:扫描线(首行 None,其余 Up 滤波) ================= */
+function scanlines(imgData) {
+  const w = imgData.width, h = imgData.height, d = imgData.data, stride = w * 4;
+  const out = new Uint8Array(h * (stride + 1));
+  for (let y = 0; y < h; y++) {
+    const rp = y * (stride + 1), cur = y * stride, prev = cur - stride;
+    out[rp] = y ? 2 : 0; // Up / None
+    for (let x = 0; x < stride; x++) out[rp + 1 + x] = y ? (d[cur + x] - d[prev + x]) & 255 : d[cur + x];
+  }
+  return out;
+}
+
+// 自适应滤波:逐行在 5 种 PNG 滤波里选绝对值和最小的(标准启发式),比纯 Up 小 20-40%
+function adaptiveScanlines(imgData, bpp) {
+  const w = imgData.width, h = imgData.height, s = imgData.data, stride = w * bpp;
+  const cur = new Uint8Array(stride), prev = new Uint8Array(stride);
+  const tmp = new Uint8Array(stride), best = new Uint8Array(stride);
+  const out = new Uint8Array(h * (stride + 1));
+  for (let y = 0; y < h; y++) {
+    const rb = y * w * 4;
+    if (bpp === 3) for (let x = 0; x < w; x++) { cur[x * 3] = s[rb + x * 4]; cur[x * 3 + 1] = s[rb + x * 4 + 1]; cur[x * 3 + 2] = s[rb + x * 4 + 2]; }
+    else for (let i = 0; i < stride; i++) cur[i] = s[rb + i];
+    let bestFt = 0, bestScore = Infinity;
+    for (let ft = 0; ft < 5; ft++) {
+      let score = 0;
+      for (let x = 0; x < stride; x++) {
+        const c = cur[x], p = prev[x], a = x >= bpp ? cur[x - bpp] : 0, cc = x >= bpp ? prev[x - bpp] : 0;
+        let v;
+        if (ft === 0) v = c; else if (ft === 1) v = c - a; else if (ft === 2) v = c - p;
+        else if (ft === 3) v = c - ((a + p) >> 1); else v = c - paeth(a, p, cc);
+        const u = v & 255;
+        tmp[x] = u; score += u < 128 ? u : 256 - u;
+      }
+      if (score < bestScore) { bestScore = score; bestFt = ft; best.set(tmp); }
+    }
+    const rp = y * (stride + 1);
+    out[rp] = bestFt; out.set(best, rp + 1);
+    prev.set(cur);
+  }
+  return out;
+}
+
+function isOpaque(imgData) { const d = imgData.data; for (let i = 3; i < d.length; i += 4) if (d[i] !== 255) return false; return true; }
+
+/* ================= 合成伪装 APNG =================
+   结构(与实测样本一致):
+   IHDR(真图尺寸) acTL(2帧,plays) [tEXt] IDAT(诱饵=默认图)
+   fcTL(seq0,全幅,dispose0,blend0) fdAT(seq1,真图)
+   fcTL(seq2,1x1,dispose0,blend1)   fdAT(seq3,1x1透明) IEND          */
+async function encodeDisguiseAPNG(decoy, real, opt) {
+  const W = real.width, H = real.height;
+  const ms = Math.min(655350, Math.max(10, Math.round(opt.delayMs)));
+  const dNum = ms % 10 === 0 ? ms / 10 : ms, dDen = ms % 10 === 0 ? 100 : 1000; // 与样本一致的 10/100 表示
+  const delay = (n) => concat([u16(n), u16(dDen)]);
+  const useRGB = opt.colorMode !== "rgba" && isOpaque(decoy) && isOpaque(real); // 不透明时砍掉 alpha 通道,原始数据省 25%
+  const bpp = useRGB ? 3 : 4, ctype = useRGB ? 2 : 6;
+  const ihdr = chunk("IHDR", concat([u32(W), u32(H), new Uint8Array([8, ctype, 0, 0, 0])]));
+  const actl = chunk("acTL", concat([u32(2), u32(opt.plays >>> 0)]));
+  const parts = [new Uint8Array([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]), ihdr, actl];
+  if (opt.txtKey) parts.push(chunk("tEXt", concat([strBytes(opt.txtKey), new Uint8Array([0]), strBytes(opt.txtVal || "")])));
+  const idat = chunk("IDAT", await deflate(adaptiveScanlines(decoy, bpp)));
+  parts.push(idat);
+  parts.push(chunk("fcTL", concat([u32(0), u32(W), u32(H), u32(0), u32(0), delay(dNum), new Uint8Array([0, 0])])));
+  const fdat1 = chunk("fdAT", concat([u32(1), await deflate(adaptiveScanlines(real, bpp))]));
+  parts.push(fdat1);
+  parts.push(chunk("fcTL", concat([u32(2), u32(1), u32(1), u32(0), u32(0), delay(dNum), new Uint8Array([0, 1])])));
+  const patch = new Uint8Array(1 + bpp); // 1×1 补丁:RGB 模式没有 alpha,取真图左上角颜色才能隐形
+  if (bpp === 3) { patch[1] = real.data[0]; patch[2] = real.data[1]; patch[3] = real.data[2]; }
+  parts.push(chunk("fdAT", concat([u32(3), await deflate(patch)])));
+  parts.push(chunk("IEND", new Uint8Array(0)));
+  const bytes = concat(parts);
+  return { bytes, info: { W, H, ctype, idatKB: Math.round((idat.length - 12) / 1024), f1KB: Math.round((fdat1.length - 12) / 1024) } };
+}
+
+/* ================= 解析 PNG/APNG ================= */
+function parsePNG(u8) {
+  const sig = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+  for (let i = 0; i < 8; i++) if (u8[i] !== sig[i]) throw new Error("不是 PNG 文件(文件头不符)");
+  const dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
+  const res = { ihdr: null, acTL: null, text: [], idatDatas: [], frames: [], isAPNG: false };
+  let cur = null, off = 8;
+  while (off + 12 <= u8.length) {
+    const len = dv.getUint32(off), type = String.fromCharCode(u8[off + 4], u8[off + 5], u8[off + 6], u8[off + 7]);
+    const data = u8.subarray(off + 8, off + 8 + len);
+    if (len > u8.length - off - 12) throw new Error("PNG 块长度异常,文件可能损坏");
+    if (type === "IHDR") res.ihdr = { w: dv.getUint32(off + 8), h: dv.getUint32(off + 12), depth: u8[off + 16], ctype: u8[off + 17], interlace: u8[off + 20] };
+    else if (type === "acTL") { res.isAPNG = true; res.acTL = { frames: dv.getUint32(off + 8), plays: dv.getUint32(off + 12) }; }
+    else if (type === "tEXt") {
+      const z = data.indexOf(0);
+      res.text.push({ key: new TextDecoder("latin1").decode(data.subarray(0, z)), val: new TextDecoder("latin1").decode(data.subarray(z + 1)) });
+    } else if (type === "IDAT") { if (cur) cur.datas.push(data); else res.idatDatas.push(data); } // fcTL 在 IDAT 前的变体:默认图即动画帧1
+    else if (type === "fcTL") {
+      cur = { seq: dv.getUint32(off + 8), w: dv.getUint32(off + 12), h: dv.getUint32(off + 16), x: dv.getUint32(off + 20), y: dv.getUint32(off + 24),
+              delayNum: dv.getUint16(off + 28), delayDen: dv.getUint16(off + 30), dispose: u8[off + 32], blend: u8[off + 33], datas: [] };
+      res.frames.push(cur);
+    } else if (type === "fdAT") { if (cur) cur.datas.push(data.subarray(4)); }
+    else if (type === "IEND") break;
+    off += 12 + len;
+  }
+  if (!res.ihdr) throw new Error("缺少 IHDR");
+  return res;
+}
+
+/* ================= 解码:滤波还原 ================= */
+function paeth(a, b, c) { const p = a + b - c, pa = Math.abs(p - a), pb = Math.abs(p - b), pc = Math.abs(p - c); return pa <= pb && pa <= pc ? a : (pb <= pc ? b : c); }
+function unfilter(raw, w, h, bpp) {
+  const stride = w * bpp, out = new Uint8Array(h * stride);
+  for (let y = 0; y < h; y++) {
+    const ft = raw[y * (stride + 1)], rp = y * (stride + 1) + 1;
+    for (let x = 0; x < stride; x++) {
+      const rv = raw[rp + x], a = x >= bpp ? out[y * stride + x - bpp] : 0, b = y ? out[(y - 1) * stride + x] : 0,
+            c = (x >= bpp && y) ? out[(y - 1) * stride + x - bpp] : 0;
+      let v;
+      if (ft === 0) v = rv; else if (ft === 1) v = rv + a; else if (ft === 2) v = rv + b;
+      else if (ft === 3) v = rv + ((a + b) >> 1); else if (ft === 4) v = rv + paeth(a, b, c);
+      else throw new Error("未知滤波类型 " + ft);
+      out[y * stride + x] = v & 255;
+    }
+  }
+  return out;
+}
+function toRGBA(pix, w, h, ctype) {
+  if (ctype === 6) return pix instanceof Uint8ClampedArray ? pix : new Uint8ClampedArray(pix);
+  if (ctype === 2) {
+    const out = new Uint8ClampedArray(w * h * 4);
+    for (let i = 0, j = 0; i < w * h; i++) { out[j++] = pix[i * 3]; out[j++] = pix[i * 3 + 1]; out[j++] = pix[i * 3 + 2]; out[j++] = 255; }
+    return out;
+  }
+  throw new Error("暂不支持色彩类型 " + ctype + "(仅支持 8-bit RGB/RGBA)");
+}
+async function decodeFrameGroup(g, ihdr) {
+  const bpp = ihdr.ctype === 6 ? 4 : 3;
+  const raw = await inflate(concat(g.datas));
+  const need = g.h * (g.w * bpp + 1);
+  if (raw.length < need) throw new Error(`帧数据不完整(需 ${need} 字节,实得 ${raw.length})`);
+  return new ImageData(toRGBA(unfilter(raw, g.w, g.h, bpp), g.w, g.h, ihdr.ctype), g.w, g.h);
+}
+function placeRegion(canvasData, region, g) { // blend: 0=SOURCE 1=OVER
+  for (let y = 0; y < g.h; y++) {
+    const dr = ((g.y + y) * canvasData.width + g.x) * 4, sr = y * g.w * 4;
+    for (let x = 0; x < g.w; x++) {
+      const di = dr + x * 4, si = sr + x * 4, sa = region[si + 3] / 255;
+      if (g.blend === 1 && sa < 1) { // OVER
+        canvasData.data[di]     = region[si]     * sa + canvasData.data[di]     * (1 - sa);
+        canvasData.data[di + 1] = region[si + 1] * sa + canvasData.data[di + 1] * (1 - sa);
+        canvasData.data[di + 2] = region[si + 2] * sa + canvasData.data[di + 2] * (1 - sa);
+        canvasData.data[di + 3] = Math.min(255, canvasData.data[di + 3] + region[si + 3] * (1 - canvasData.data[di + 3] / 255));
+      } else {
+        canvasData.data[di] = region[si]; canvasData.data[di + 1] = region[si + 1];
+        canvasData.data[di + 2] = region[si + 2]; canvasData.data[di + 3] = region[si + 3];
+      }
+    }
+  }
+}
+
+/* ================= 通用 APNG 编码器(多帧) =================
+   frames: [{ data: RGBA Uint8ClampedArray, delayMs }]
+   opt.defaultImage: 可选,写进 IDAT 作默认图(不参与动画;非 APNG 解码器只显示它) */
+async function encodeAPNG(frames, W, H, opt) {
+  opt = opt || {};
+  let rgb = opt.colorMode !== "rgba";
+  if (rgb) for (const f of frames) if (!isOpaque(f)) { rgb = false; break; }
+  const bpp = rgb ? 3 : 4, ctype = rgb ? 2 : 6;
+  const delay = ms => {
+    const m = Math.min(655350, Math.max(10, Math.round(ms || 100)));
+    return m % 10 === 0 ? concat([u16(m / 10), u16(100)]) : concat([u16(m), u16(1000)]);
+  };
+  const parts = [
+    new Uint8Array([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]),
+    chunk("IHDR", concat([u32(W), u32(H), new Uint8Array([8, ctype, 0, 0, 0])])),
+    chunk("acTL", concat([u32(frames.length), u32(opt.plays >>> 0)])),
+  ];
+  let seq = 0;
+  if (opt.defaultImage) parts.push(chunk("IDAT", await deflate(adaptiveScanlines({ width: W, height: H, data: opt.defaultImage }, bpp))));
+  for (let i = 0; i < frames.length; i++) {
+    parts.push(chunk("fcTL", concat([u32(seq++), u32(W), u32(H), u32(0), u32(0), delay(frames[i].delayMs), new Uint8Array([0, 0])])));
+    const comp = await deflate(adaptiveScanlines({ width: W, height: H, data: frames[i].data }, bpp));
+    if (i === 0 && !opt.defaultImage) parts.push(chunk("IDAT", comp));
+    else parts.push(chunk("fdAT", concat([u32(seq++), comp])));
+  }
+  parts.push(chunk("IEND", new Uint8Array(0)));
+  return concat(parts);
+}
+
+/* ================= GIF 解码(LZW + 帧处置 + interlaced) ================= */
+function lzwGIF(blocks, minCodeSize, pixelCount) {
+  const clearCode = 1 << minCodeSize, eoiCode = clearCode + 1;
+  const prefix = new Int32Array(4097), suffix = new Uint8Array(4097), stack = new Uint8Array(4097);
+  const out = new Uint8Array(pixelCount);
+  let outPos = 0, bitBuf = 0, bitCount = 0, codeSize = minCodeSize + 1, next = eoiCode + 1, prev = -1, first = 0;
+  let total = 0; for (const b of blocks) total += b.length;
+  const data = new Uint8Array(total); { let o = 0; for (const b of blocks) { data.set(b, o); o += b.length; } }
+  for (let i = 0; i < data.length; i++) {
+    bitBuf |= data[i] << bitCount; bitCount += 8;
+    while (bitCount >= codeSize) {
+      const code = bitBuf & ((1 << codeSize) - 1);
+      bitBuf >>>= codeSize; bitCount -= codeSize;
+      if (code === clearCode) { codeSize = minCodeSize + 1; next = eoiCode + 1; prev = -1; continue; }
+      if (code === eoiCode) return out;
+      let codeCopy = code, top = 0;
+      if (code === next) { stack[top++] = first; codeCopy = prev; }
+      else if (code > next) throw new Error("GIF LZW 码越界");
+      if (codeCopy < 0) throw new Error("GIF LZW 数据错误");
+      while (codeCopy > clearCode) { stack[top++] = suffix[codeCopy]; codeCopy = prefix[codeCopy]; }
+      first = codeCopy & 0xff;
+      stack[top++] = first;
+      while (top > 0) { const v = stack[--top]; if (outPos < pixelCount) out[outPos++] = v; }
+      if (prev >= 0 && next < 4097) {
+        prefix[next] = prev; suffix[next] = first; next++;
+        if (next === (1 << codeSize) && codeSize < 12) codeSize++;
+      }
+      prev = code;
+      if (outPos >= pixelCount) return out;
+    }
+  }
+  return out;
+}
+
+function decodeGIF(u8) {
+  const sig = String.fromCharCode(u8[0], u8[1], u8[2], u8[3], u8[4], u8[5]);
+  if (sig !== "GIF87a" && sig !== "GIF89a") throw new Error("不是 GIF 文件(文件头不符)");
+  let p = 6;
+  const W = u8[p] | (u8[p + 1] << 8), H = u8[p + 2] | (u8[p + 3] << 8);
+  const packed = u8[p + 4]; p += 7;
+  let gct = null;
+  if (packed & 0x80) { const n = 2 << (packed & 7); gct = u8.subarray(p, p + n * 3); p += n * 3; }
+  const canvas = new Uint8ClampedArray(W * H * 4);
+  const frames = [];
+  let disposal = 0, transparent = -1, delayCs = 0;
+  const readSub = () => { const arr = []; while (u8[p] !== 0) { const n = u8[p++]; arr.push(u8.subarray(p, p + n)); p += n; } p++; return arr; };
+  while (p < u8.length) {
+    const b = u8[p++];
+    if (b === 0x3B) break;
+    if (b === 0x21) {
+      const label = u8[p++];
+      if (label === 0xF9) {
+        const size = u8[p++], flags = u8[p];
+        disposal = (flags >> 2) & 7;
+        transparent = (flags & 1) ? u8[p + 3] : -1;
+        delayCs = u8[p + 1] | (u8[p + 2] << 8);
+        p += size; if (u8[p] === 0) p++;
+      } else { readSub(); }
+    } else if (b === 0x2C) {
+      const left = u8[p] | (u8[p + 1] << 8), top = u8[p + 2] | (u8[p + 3] << 8);
+      const iw = u8[p + 4] | (u8[p + 5] << 8), ih = u8[p + 6] | (u8[p + 7] << 8);
+      const ip = u8[p + 8]; p += 9;
+      let ct = gct;
+      if (ip & 0x80) { const n = 2 << (ip & 7); ct = u8.subarray(p, p + n * 3); p += n * 3; }
+      const minCode = u8[p++];
+      const idx = lzwGIF(readSub(), minCode, iw * ih);
+      const reg = new Uint8ClampedArray(iw * ih * 4);
+      for (let i = 0; i < iw * ih; i++) {
+        const v = idx[i], j = i * 4;
+        if (v === transparent || !ct) reg[j + 3] = 0;
+        else { reg[j] = ct[v * 3]; reg[j + 1] = ct[v * 3 + 1]; reg[j + 2] = ct[v * 3 + 2]; reg[j + 3] = 255; }
+      }
+      let nat = reg;
+      if (ip & 0x40) { // interlaced:按 4 个 pass 重排到自然行序
+        nat = new Uint8ClampedArray(reg.length);
+        const order = [];
+        for (let y = 0; y < ih; y += 8) order.push(y);
+        for (let y = 4; y < ih; y += 8) order.push(y);
+        for (let y = 2; y < ih; y += 4) order.push(y);
+        for (let y = 1; y < ih; y += 2) order.push(y);
+        for (let k = 0; k < ih; k++) nat.set(reg.subarray(k * iw * 4, (k + 1) * iw * 4), order[k] * iw * 4);
+      }
+      const backup = disposal === 3 ? new Uint8ClampedArray(canvas) : null;
+      for (let y = 0; y < ih; y++) {
+        const dy = top + y; if (dy < 0 || dy >= H) continue;
+        for (let x = 0; x < iw; x++) {
+          const si = (y * iw + x) * 4; if (nat[si + 3] === 0) continue;
+          const dx = left + x; if (dx < 0 || dx >= W) continue;
+          const di = (dy * W + dx) * 4;
+          canvas[di] = nat[si]; canvas[di + 1] = nat[si + 1]; canvas[di + 2] = nat[si + 2]; canvas[di + 3] = 255;
+        }
+      }
+      frames.push({ data: new Uint8ClampedArray(canvas), delayMs: delayCs > 0 ? delayCs * 10 : 0 });
+      if (disposal === 2) {
+        for (let y = top; y < top + ih; y++) { if (y < 0 || y >= H) continue; for (let x = left; x < left + iw; x++) { if (x < 0 || x >= W) continue; const di = (y * W + x) * 4; canvas[di] = canvas[di + 1] = canvas[di + 2] = canvas[di + 3] = 0; } }
+      } else if (disposal === 3 && backup) canvas.set(backup);
+      disposal = 0; transparent = -1; delayCs = 0;
+    } else throw new Error("未知 GIF 块 0x" + b.toString(16));
+  }
+  if (!frames.length) throw new Error("GIF 中没有可解码的帧");
+  return { width: W, height: H, frames };
+}
+
+/* ================= 把 APNG 解码为完整 RGBA 帧 ================= */
+function compositeRegion(dst, src, W, H, x, y, w, h, blend) {
+  for (let ry = 0; ry < h; ry++) {
+    const dy = y + ry; if (dy < 0 || dy >= H) continue;
+    for (let rx = 0; rx < w; rx++) {
+      const dx = x + rx; if (dx < 0 || dx >= W) continue;
+      const si = (ry * w + rx) * 4, di = (dy * W + dx) * 4, sa = src[si + 3] / 255;
+      if (blend === 1 && sa < 1) {
+        dst[di] = src[si] * sa + dst[di] * (1 - sa);
+        dst[di + 1] = src[si + 1] * sa + dst[di + 1] * (1 - sa);
+        dst[di + 2] = src[si + 2] * sa + dst[di + 2] * (1 - sa);
+        dst[di + 3] = Math.min(255, dst[di + 3] + src[si + 3] * (1 - dst[di + 3] / 255));
+      } else {
+        dst[di] = src[si]; dst[di + 1] = src[si + 1]; dst[di + 2] = src[si + 2]; dst[di + 3] = src[si + 3];
+      }
+    }
+  }
+}
+async function decodeAPNGFrames(u8) {
+  const p = parsePNG(u8);
+  if (p.ihdr.depth !== 8 || (p.ihdr.ctype !== 6 && p.ihdr.ctype !== 2) || p.ihdr.interlace) throw new Error("仅支持 8-bit RGB/RGBA 非隔行");
+  if (!p.isAPNG) throw new Error("这是普通静态 PNG,不是 APNG 动图");
+  const W = p.ihdr.w, H = p.ihdr.h;
+  const canvas = new Uint8ClampedArray(W * H * 4);
+  const frames = [];
+  for (const g of p.frames) {
+    const backup = g.dispose === 2 ? new Uint8ClampedArray(canvas) : null;
+    const region = await decodeFrameGroup(g, p.ihdr);
+    compositeRegion(canvas, region.data, W, H, g.x || 0, g.y || 0, g.w, g.h, g.blend);
+    frames.push({ data: new Uint8ClampedArray(canvas), delayMs: Math.round(g.delayNum / (g.delayDen || 100) * 1000) });
+    if (g.dispose === 2 && backup) canvas.set(backup);
+    else if (g.dispose === 1) compositeRegion(canvas, new Uint8ClampedArray(g.w * g.h * 4), W, H, g.x || 0, g.y || 0, g.w, g.h, 0);
+  }
+  if (!frames.length) throw new Error("APNG 没有动画帧");
+  return { width: W, height: H, frames };
+}
+
+/* ================= UI:标签页 ================= */
+const TABS = ["Make", "Split", "Gif", "Merge"];
+function showTab(name) {
+  for (const t of TABS) {
+    $("tab" + t).classList.toggle("on", t === name);
+    $("pane" + t).style.display = t === name ? "" : "none";
+  }
+}
+for (const t of TABS) $("tab" + t).onclick = () => showTab(t);
+
+/* ================= UI:合成 ================= */
+const state = { decoy: null, real: null }; // ImageBitmap
+function msg(id, text, cls) { const e = $(id); e.textContent = text; e.className = "msg " + (cls || "dim"); }
+function setupDrop(zoneId, key, previewId) {
+  const zone = $(zoneId);
+  const input = Object.assign(document.createElement("input"), { type: "file", accept: "image/*" });
+  zone.appendChild(input);
+  const load = async file => {
+    if (!file) return;
+    try {
+      const bmp = await createImageBitmap(file);
+      state[key] = bmp;
+      zone.classList.add("has");
+      zone.querySelector("img")?.remove();
+      const img = new Image(); img.src = URL.createObjectURL(file); zone.appendChild(img);
+      $(previewId).src = img.src;
+      msg("makeMsg", `已加载:${file.name}(${bmp.width}×${bmp.height})`, "dim");
+      $("btnMake").disabled = !(state.decoy && state.real);
+    } catch (e) { msg("makeMsg", "加载失败:" + e.message, "err"); }
+  };
+  zone.onclick = () => input.click();
+  input.onchange = () => load(input.files[0]);
+  zone.ondragover = e => { e.preventDefault(); zone.classList.add("over"); };
+  zone.ondragleave = () => zone.classList.remove("over");
+  zone.ondrop = e => { e.preventDefault(); zone.classList.remove("over"); load(e.dataTransfer.files[0]); };
+}
+setupDrop("dzDecoy", "decoy", "pvDecoy");
+setupDrop("dzReal", "real", "pvReal");
+
+function bitmapToImageData(bmp, W, H, scale) {
+  const c = document.createElement("canvas"); c.width = W; c.height = H;
+  const ctx = c.getContext("2d");
+  if (scale && scale < 1) { // 先缩小再拉伸:诱饵不需要分辨率,用分辨率换体积
+    const s = document.createElement("canvas");
+    s.width = Math.max(1, Math.round(W * scale)); s.height = Math.max(1, Math.round(H * scale));
+    const sctx = s.getContext("2d"); sctx.imageSmoothingEnabled = true;
+    sctx.drawImage(bmp, 0, 0, s.width, s.height);
+    ctx.imageSmoothingEnabled = true; ctx.drawImage(s, 0, 0, W, H);
+  } else {
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(bmp, 0, 0, W, H); // 诱饵拉伸铺满
+  }
+  return ctx.getImageData(0, 0, W, H);
+}
+$("btnMake").onclick = async () => {
+  try {
+    msg("makeMsg", "正在合成(自适应滤波压缩中,大图需几秒)…", "dim");
+    const cap = +$("maxEdge").value || 0;
+    const k = cap && Math.max(state.real.width, state.real.height) > cap
+      ? cap / Math.max(state.real.width, state.real.height) : 1;
+    const W = Math.max(1, Math.round(state.real.width * k)), H = Math.max(1, Math.round(state.real.height * k));
+    const realData = bitmapToImageData(state.real, W, H, 1);
+    const decoyData = bitmapToImageData(state.decoy, W, H, $("decoyHalf").checked ? 0.5 : 1);
+    const out = await encodeDisguiseAPNG(decoyData, realData, {
+      delayMs: +$("delayMs").value || 100, plays: +$("plays").value || 0,
+      txtKey: $("txtKey").value.trim(), txtVal: $("txtVal").value,
+      colorMode: $("colorMode").value,
+    });
+    const blob = new Blob([out.bytes], { type: "image/png" });
+    const name = "disguise_" + new Date().toISOString().replace(/[-:T]/g, "").slice(0, 14) + ".png";
+    const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: name });
+    a.click();
+    $("pvOut").src = a.href;
+    const i = out.info;
+    msg("makeMsg", `完成:${name} · ${W}×${H} · 总 ${(blob.size / 1024).toFixed(0)} KB(诱饵帧 ${i.idatKB} KB + 真图帧 ${i.f1KB} KB)· 色彩 ${i.ctype === 2 ? "RGB(不透明精简)" : "RGBA"}`, "ok");
+  } catch (e) { msg("makeMsg", "合成失败:" + e.message, "err"); }
+};
+
+/* ================= UI:拆图 ================= */
+function setupSplit(zoneId) {
+  const zone = $(zoneId);
+  const input = Object.assign(document.createElement("input"), { type: "file", accept: "image/*,.apng" });
+  zone.appendChild(input);
+  zone.onclick = () => input.click();
+  input.onchange = () => splitFile(input.files[0]);
+  zone.ondragover = e => { e.preventDefault(); zone.classList.add("over"); };
+  zone.ondragleave = () => zone.classList.remove("over");
+  zone.ondrop = e => { e.preventDefault(); zone.classList.remove("over"); splitFile(e.dataTransfer.files[0]); };
+}
+async function imgToImageData(bmp) {
+  const c = document.createElement("canvas"); c.width = bmp.width; c.height = bmp.height;
+  const ctx = c.getContext("2d"); ctx.drawImage(bmp, 0, 0);
+  return ctx.getImageData(0, 0, bmp.width, bmp.height);
+}
+function addFrameCard(title, imgData, metaText) {
+  const c = document.createElement("canvas"); c.width = imgData.width; c.height = imgData.height;
+  c.getContext("2d").putImageData(imgData, 0, 0);
+  c.toBlob(blob => {
+    const url = URL.createObjectURL(blob);
+    const name = title.replace(/[^\w一-龥]+/g, "_") + ".png";
+    const div = document.createElement("div"); div.className = "fr";
+    div.innerHTML = `<img src="${url}"><div class="meta">${metaText}</div><a href="${url}" download="${name}">下载这一帧</a>`;
+    $("frameList").appendChild(div);
+  }, "image/png");
+}
+async function splitFile(file) {
+  if (!file) return;
+  try {
+    $("frameList").innerHTML = ""; $("splitInfo").innerHTML = "";
+    msg("splitMsg", "解析中…", "dim");
+    const buf = new Uint8Array(await file.arrayBuffer());
+    const p = parsePNG(buf);
+    const tags = p.text.map(t => `<span class="tag">${t.key} = ${t.val}</span>`).join(" ") || "无";
+    const kind = p.isAPNG
+      ? `<b>APNG 动图</b> · 声明 ${p.acTL.frames} 帧 · 循环 ${p.acTL.plays === 0 ? "无限" : p.acTL.plays + " 次"}`
+      : "普通静态 PNG";
+    $("splitInfo").innerHTML = `<div class="kbig">${kind} · ${p.ihdr.w}×${p.ihdr.h} · depth=${p.ihdr.depth} ctype=${p.ihdr.ctype} · ${(file.size / 1024).toFixed(0)} KB</div>
+      <div class="kbig">tEXt 标记:${tags}</div>
+      ${p.ihdr.depth !== 8 || (p.ihdr.ctype !== 6 && p.ihdr.ctype !== 2) || p.ihdr.interlace ? '<div class="msg err">注意:该文件色型/位深/隔行方式不受支持,动画帧可能无法解码</div>' : ""}`;
+    // 帧 0 = 默认图(诱饵)。不能用 createImageBitmap:支持 APNG 的浏览器会返回动画第一帧
+    // (也就是真图),这正是"拆出来的诱饵图是原图"的原因。必须直接解码 IDAT。
+    let defaultImg = null, defaultNote = "";
+    if (!p.ihdr.interlace && (p.idatDatas.length || p.frames.length)) {
+      try {
+        if (p.idatDatas.length) { // IDAT 独立于动画 → 它就是诱饵
+          defaultImg = await decodeFrameGroup({ w: p.ihdr.w, h: p.ihdr.h, datas: p.idatDatas }, p.ihdr);
+          defaultNote = p.isAPNG ? " —— 不参与动画,只有老软件会显示" : "";
+        } else { // fcTL 在 IDAT 前 → 默认图就是动画第 1 帧
+          defaultImg = await decodeFrameGroup(p.frames[0], p.ihdr);
+          defaultNote = "(默认图即动画第 1 帧)";
+        }
+      } catch (e) { defaultImg = null; }
+    }
+    if (defaultImg) {
+      addFrameCard("frame0_默认图", defaultImg, `默认图(诱饵)${defaultNote} · ${p.ihdr.w}×${p.ihdr.h}`);
+    } else { // 色型/位深不受支持时退化为浏览器解码(可能拿到动画首帧)
+      const bmp0 = await createImageBitmap(new Blob([buf], { type: "image/png" }));
+      addFrameCard("frame0_默认图", await imgToImageData(bmp0), `默认图(浏览器首帧;色型不受支持时可能不是诱饵) · ${bmp0.width}×${bmp0.height}`);
+    }
+    // 动画帧:手动 inflate + 滤波还原
+    if (p.isAPNG) {
+      for (let i = 0; i < p.frames.length; i++) {
+        const g = p.frames[i];
+        try {
+          const region = await decodeFrameGroup(g, p.ihdr);
+          const canvasData = new ImageData(p.ihdr.w, p.ihdr.h);
+          const gFull = { ...g, x: g.x || 0, y: g.y || 0 };
+          if (gFull.w === p.ihdr.w && gFull.h === p.ihdr.h) { // 全幅帧直接替换
+            canvasData.data.set(region.data);
+          } else placeRegion(canvasData, region.data, gFull);
+          addFrameCard(`frame${i + 1}_动画帧`, canvasData,
+            `动画帧 ${i + 1} · ${g.w}×${g.h} @(${g.x},${g.y}) · ${Math.round(g.delayNum / (g.delayDen || 100) * 1000)}ms · dispose=${g.dispose} blend=${g.blend}`);
+        } catch (e) {
+          $("frameList").insertAdjacentHTML("beforeend",
+            `<div class="fr"><div class="meta">动画帧 ${i + 1} 解码失败:${e.message}</div></div>`);
+        }
+      }
+    }
+    msg("splitMsg", `解析完成:默认图 1 张 + 动画帧 ${p.isAPNG ? p.frames.length : 0} 个。若动画帧缩略图是黑的,说明该帧为局部透明补丁,属正常现象。`, "ok");
+  } catch (e) { msg("splitMsg", "解析失败:" + e.message, "err"); }
+}
+setupSplit("dzSplit");
+
+/* ================= UI 通用:拖放 / 下载 / 帧缩放 ================= */
+function makeDrop(zoneId, accept, onFile) {
+  const zone = $(zoneId);
+  const input = Object.assign(document.createElement("input"), { type: "file", accept });
+  zone.appendChild(input);
+  zone.onclick = () => input.click();
+  input.onchange = () => { if (input.files[0]) onFile(input.files[0]); };
+  zone.ondragover = e => { e.preventDefault(); zone.classList.add("over"); };
+  zone.ondragleave = () => zone.classList.remove("over");
+  zone.ondrop = e => { e.preventDefault(); e.stopPropagation(); zone.classList.remove("over"); if (e.dataTransfer.files[0]) onFile(e.dataTransfer.files[0]); };
+}
+function frameToCanvas(data, W, H) {
+  const c = document.createElement("canvas"); c.width = W; c.height = H;
+  c.getContext("2d").putImageData(new ImageData(data, W, H), 0, 0);
+  return c;
+}
+function scaleFrame(data, W, H, nW, nH) {
+  if (nW === W && nH === H) return data;
+  const c = document.createElement("canvas"); c.width = nW; c.height = nH;
+  const x = c.getContext("2d"); x.imageSmoothingEnabled = true; x.imageSmoothingQuality = "high";
+  x.drawImage(frameToCanvas(data, W, H), 0, 0, nW, nH);
+  return x.getImageData(0, 0, nW, nH).data;
+}
+function zoneImage(zoneId, src) { const z = $(zoneId); z.querySelector("img")?.remove(); const img = new Image(); img.src = src; z.appendChild(img); z.classList.add("has"); }
+function downloadBytes(bytes, name) {
+  const blob = new Blob([bytes], { type: "image/png" });
+  const url = URL.createObjectURL(blob);
+  Object.assign(document.createElement("a"), { href: url, download: name }).click();
+  return { blob, url };
+}
+function stamp() { return new Date().toISOString().replace(/[-:T]/g, "").slice(0, 14); }
+
+/* ================= UI:GIF → APNG ================= */
+const gifState = { width: 0, height: 0, frames: [] };
+makeDrop("dzGif", "image/gif,.gif", async file => {
+  try {
+    msg("gifMsg", "解析 GIF 中…", "dim");
+    const g = decodeGIF(new Uint8Array(await file.arrayBuffer()));
+    gifState.width = g.width; gifState.height = g.height; gifState.frames = g.frames;
+    zoneImage("dzGif", URL.createObjectURL(file));
+    const total = g.frames.reduce((s, f) => s + (f.delayMs || 0), 0);
+    $("gifInfo").innerHTML = `<div class="kbig">${file.name} · ${g.width}×${g.height} · ${g.frames.length} 帧 · 原时长 ${(total / 1000).toFixed(2)}s · ${(file.size / 1024).toFixed(0)} KB</div>`;
+    $("gifOut").removeAttribute("src");
+    $("btnGif").disabled = false;
+    msg("gifMsg", "GIF 已解码,点击下方按钮转换。", "ok");
+  } catch (e) { gifState.frames = []; $("btnGif").disabled = true; msg("gifMsg", "解析失败:" + e.message, "err"); }
+});
+$("btnGif").onclick = async () => {
+  if (!gifState.frames.length) return;
+  try {
+    msg("gifMsg", "转换中(逐帧编码)…", "dim");
+    const cap = +$("gifMaxEdge").value || 0;
+    const k = cap && Math.max(gifState.width, gifState.height) > cap ? cap / Math.max(gifState.width, gifState.height) : 1;
+    const W = Math.max(1, Math.round(gifState.width * k)), H = Math.max(1, Math.round(gifState.height * k));
+    const speed = Math.max(0.05, +$("gifSpeed").value || 1);
+    const fallback = +$("gifDelay").value || 100;
+    const frames = gifState.frames.map(f => ({ data: scaleFrame(f.data, gifState.width, gifState.height, W, H), delayMs: Math.max(10, Math.round((f.delayMs || fallback) / speed)) }));
+    const bytes = await encodeAPNG(frames, W, H, { plays: +$("gifPlays").value || 0, colorMode: $("gifColor").value });
+    const name = "gif2apng_" + stamp() + ".png";
+    const { blob, url } = downloadBytes(bytes, name);
+    $("gifOut").src = url;
+    msg("gifMsg", `完成:${name} · ${W}×${H} · ${frames.length} 帧 · ${(blob.size / 1024).toFixed(0)} KB`, "ok");
+  } catch (e) { msg("gifMsg", "转换失败:" + e.message, "err"); }
+};
+
+/* ================= UI:PNG + 动图合成 ================= */
+const mgState = { png: null, anim: null, animType: "" };
+makeDrop("dzMergePng", "image/png,.png", async file => {
+  try {
+    const bmp = await createImageBitmap(file);
+    mgState.png = bmp;
+    zoneImage("dzMergePng", URL.createObjectURL(file));
+    $("btnMerge").disabled = !(mgState.png && mgState.anim);
+    msg("mergeMsg", `PNG 已加载:${file.name}(${bmp.width}×${bmp.height})`, "dim");
+  } catch (e) { msg("mergeMsg", "PNG 加载失败:" + e.message, "err"); }
+});
+makeDrop("dzMergeGif", "image/gif,.gif,image/png,.png,.apng", async file => {
+  try {
+    msg("mergeMsg", "解析动图中…", "dim");
+    const u8 = new Uint8Array(await file.arrayBuffer());
+    const isGif = u8[0] === 0x47 && u8[1] === 0x49 && u8[2] === 0x46;
+    const anim = isGif ? decodeGIF(u8) : await decodeAPNGFrames(u8);
+    mgState.anim = anim; mgState.animType = isGif ? "GIF" : "APNG";
+    zoneImage("dzMergeGif", URL.createObjectURL(file));
+    $("btnMerge").disabled = !(mgState.png && mgState.anim);
+    msg("mergeMsg", `${mgState.animType} 已加载:${file.name}(${anim.width}×${anim.height},${anim.frames.length} 帧)`, "dim");
+  } catch (e) { mgState.anim = null; $("btnMerge").disabled = true; msg("mergeMsg", "动图解析失败:" + e.message, "err"); }
+});
+$("btnMerge").onclick = async () => {
+  if (!(mgState.png && mgState.anim)) return;
+  try {
+    msg("mergeMsg", "合成中(逐帧编码,大图需数秒)…", "dim");
+    const g = mgState.anim, pngBmp = mgState.png;
+    const cap = +$("mMaxEdge").value || 0;
+    const k = cap && Math.max(g.width, g.height) > cap ? cap / Math.max(g.width, g.height) : 1;
+    const W = Math.max(1, Math.round(g.width * k)), H = Math.max(1, Math.round(g.height * k));
+    const mode = $("mMode").value;
+    const alpha = Math.max(0, Math.min(1, (+$("mAlpha").value || 0) / 100));
+    const override = +$("mDelay").value || 0;
+    const fit = $("mFit").value;
+    // PNG 图层(缩放到输出尺寸)
+    const pngC = document.createElement("canvas"); pngC.width = W; pngC.height = H;
+    const pctx = pngC.getContext("2d");
+    if (fit === "stretch") pctx.drawImage(pngBmp, 0, 0, W, H);
+    else {
+      const s = fit === "contain" ? Math.min(W / pngBmp.width, H / pngBmp.height) : 1;
+      pctx.drawImage(pngBmp, (W - pngBmp.width * s) / 2, (H - pngBmp.height * s) / 2, pngBmp.width * s, pngBmp.height * s);
+    }
+    const oc = document.createElement("canvas"); oc.width = W; oc.height = H;
+    const octx = oc.getContext("2d");
+    const out = [];
+    if (mode === "first") out.push({ data: pctx.getImageData(0, 0, W, H).data, delayMs: +$("mFirstDelay").value || 100 });
+    for (let i = 0; i < g.frames.length; i++) {
+      const src = frameToCanvas(g.frames[i].data, g.width, g.height);
+      octx.clearRect(0, 0, W, H);
+      if (mode === "disguise") { octx.globalAlpha = 1; octx.drawImage(src, 0, 0, W, H); }
+      else if (mode === "fg") { octx.globalAlpha = 1; octx.drawImage(src, 0, 0, W, H); octx.globalAlpha = alpha; octx.drawImage(pngC, 0, 0); }
+      else { octx.globalAlpha = 1; octx.drawImage(pngC, 0, 0); octx.globalAlpha = alpha; octx.drawImage(src, 0, 0, W, H); }
+      octx.globalAlpha = 1;
+      out.push({ data: octx.getImageData(0, 0, W, H).data, delayMs: override || Math.max(10, g.frames[i].delayMs || 100) });
+    }
+    const bytes = await encodeAPNG(out, W, H, {
+      plays: +$("mPlays").value || 0, colorMode: $("mColor").value,
+      defaultImage: mode === "disguise" ? pctx.getImageData(0, 0, W, H).data : null,
+    });
+    const name = "merge_" + stamp() + ".png";
+    const { blob, url } = downloadBytes(bytes, name);
+    $("mergeOut").src = url;
+    msg("mergeMsg", `完成:${name} · ${W}×${H} · ${out.length} 帧 · ${(blob.size / 1024).toFixed(0)} KB`, "ok");
+  } catch (e) { msg("mergeMsg", "合成失败:" + e.message, "err"); }
+};
+
+/* 供自动化测试调用 */
+window.__APNG = { encodeDisguiseAPNG, encodeAPNG, parsePNG, decodeFrameGroup, decodeGIF, lzwGIF, decodeAPNGFrames, compositeRegion, scanlines, adaptiveScanlines, isOpaque, inflate, deflate, crc32, chunk, u32, u16, concat };
+</script>
+</body>
+</html>
