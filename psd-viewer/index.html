@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSD 查看器(本地运行)</title>
+<style>
+  :root { --bg:#111418; --card:#1b2026; --line:#2a323b; --txt:#e8edf2; --dim:#8b97a3; --acc:#4da3ff; --ok:#3fce7a; --err:#ff6b6b; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--txt); font:14px/1.6 "Segoe UI",system-ui,"Microsoft YaHei",sans-serif; }
+  .wrap { max-width:1160px; margin:0 auto; padding:24px 16px 60px; }
+  h1 { font-size:20px; margin:0 0 4px; }
+  .sub { color:var(--dim); font-size:12px; margin-bottom:20px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px; margin-bottom:16px; }
+  .card h2 { font-size:15px; margin:0 0 12px; }
+  .drop { border:2px dashed var(--line); border-radius:10px; padding:26px; text-align:center; cursor:pointer; transition:.15s; }
+  .drop:hover,.drop.over { border-color:var(--acc); background:#20304a33; }
+  .drop .hint { color:var(--dim); font-size:12px; }
+  .grid { display:grid; grid-template-columns:1fr 340px; gap:16px; align-items:start; }
+  @media (max-width:860px){ .grid{ grid-template-columns:1fr; } }
+  .pvbox { background:#0d1013; border:1px solid var(--line); border-radius:8px; padding:10px; text-align:center; }
+  .pvbox canvas, .pvbox img { max-width:100%; max-height:560px; }
+  .pvbox .t { font-size:12px; color:var(--dim); margin-bottom:6px; }
+  .btn { background:var(--acc); color:#08111c; font-weight:600; border:0; border-radius:8px; padding:7px 14px; cursor:pointer; font-size:13px; }
+  .btn:disabled { opacity:.4; cursor:not-allowed; }
+  .btn.gray { background:#39424d; color:var(--txt); }
+  .msg { margin-top:10px; font-size:13px; min-height:20px; }
+  .msg.ok { color:var(--ok); } .msg.err { color:var(--err); } .msg.dim { color:var(--dim); }
+  .kbig { font-size:13px; color:var(--dim); } .kbig b { color:var(--txt); }
+  ul.layers { list-style:none; margin:10px 0 0; padding:0; max-height:480px; overflow:auto; }
+  ul.layers li { display:flex; align-items:center; gap:8px; padding:7px 8px; border-bottom:1px solid var(--line); font-size:13px; }
+  ul.layers li.divider { color:var(--dim); background:#141920; font-size:12px; }
+  ul.layers li.off { opacity:.45; }
+  ul.layers .nm { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  ul.layers .meta { color:var(--dim); font-size:11px; white-space:nowrap; }
+  ul.layers a { color:var(--acc); font-size:12px; white-space:nowrap; }
+  ul.layers input[type=checkbox] { width:auto; }
+  .warn { background:#3a2b12; color:#ffb84d; border:1px solid #6b4c1a; border-radius:6px; padding:6px 10px; font-size:12px; margin-top:10px; }
+  .foot { color:var(--dim); font-size:11px; margin-top:24px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>PSD 查看器</h1>
+  <div class="sub">纯本地解析,文件不上传 · 看合并图 / 逐层开关预览 / 每层导出 PNG · 手写解析器零依赖</div>
+
+  <div class="card">
+    <div class="drop" id="dz">
+      <b>拖入 .psd 文件,或点击选择</b>
+      <div class="hint">支持 RGB/灰度 8bit 图层(Raw/RLE 压缩)与合并图(另支持 16bit、CMYK 近似转换、ZIP 压缩);PSB(大格式)暂不支持</div>
+    </div>
+    <div class="msg dim" id="msg">未加载文件</div>
+  </div>
+
+  <div id="pane" style="display:none">
+    <div class="card" id="infoCard"></div>
+    <div class="grid">
+      <div class="card">
+        <h2>预览</h2>
+        <div style="margin-bottom:10px">
+          <button class="btn gray" id="btnFile">文件合并图</button>
+          <button class="btn gray" id="btnLive">按图层重渲(可开关图层)</button>
+          <button class="btn" id="btnDl" disabled>下载当前视图 PNG</button>
+        </div>
+        <div class="pvbox"><div class="t" id="pvTitle"></div><canvas id="pv"></canvas></div>
+      </div>
+      <div class="card">
+        <h2>图层(<span id="lyCount">0</span>)</h2>
+        <div class="kbig">点眼睛开关图层,预览实时重渲</div>
+        <ul class="layers" id="layerList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">PSD 结构:头部 → 颜色模式 → 图像资源 → 图层与蒙版 → 合并图像数据。"文件合并图"是编辑器保存时的最终样子;"按图层重渲"由本工具逐层解码重新合成,群组/剪贴蒙版等高级特性按平铺近似处理。</div>
+</div>
+
+<script>
+"use strict";
+/* ================= 字节流读取 ================= */
+class R {
+  constructor(u8) { this.buf = u8; this.v = new DataView(u8.buffer, u8.byteOffset, u8.byteLength); this.o = 0; }
+  tell() { return this.o; }
+  seek(o) { this.o = o; }
+  skip(n) { this.o += n; }
+  u8() { return this.buf[this.o++]; }
+  u16() { const v = this.v.getUint16(this.o); this.o += 2; return v; }
+  i16() { const v = this.v.getInt16(this.o); this.o += 2; return v; }
+  u32() { const v = this.v.getUint32(this.o); this.o += 4; return v; }
+  i32() { const v = this.v.getInt32(this.o); this.o += 4; return v; }
+  bytes(n) { const b = this.buf.subarray(this.o, this.o + n); this.o += n; return b; }
+  ascii(n) { let s = ""; for (let i = 0; i < n; i++) s += String.fromCharCode(this.buf[this.o + i]); this.o += n; return s; }
+  check(sig) { const s = this.ascii(4); if (s !== sig) throw new Error(`应为 ${sig},实际 ${s}(偏移 ${this.o - 4},文件可能损坏或为变体格式)`); }
+}
+
+/* ================= PackBits(RLE)解码 ================= */
+function decodePackbits(src, expected) { // 整段解码
+  const out = new Uint8Array(expected);
+  let i = 0, o = 0;
+  while (i < src.length && o < expected) {
+    const s = (src[i] << 24) >> 24; i++;
+    if (s >= 0) { const n = s + 1; if (i + n > src.length) throw new Error("RLE 数据越界"); out.set(src.subarray(i, i + n), o); i += n; o += n; }
+    else if (s !== -128) { const n = 1 - s; if (i >= src.length) throw new Error("RLE 数据越界"); out.fill(src[i++], o, o + n); o += n; }
+  }
+  if (o !== expected) throw new Error(`RLE 解码长度不符(得 ${o},期望 ${expected})`);
+  return out;
+}
+
+/* ================= PSD 解析 ================= */
+const BLEND = { "norm": "source-over", "mul ": "multiply", "scrn": "screen", "over": "overlay", "dark": "darken",
+  "lite": "lighten", "idiv": "color-dodge", "divi": "color-burn", "hLit": "hard-light", "sLit": "soft-light",
+  "diff": "difference", "smud": "exclusion", "hue ": "hue", "sat ": "saturation", "colr": "color", "lum ": "luminosity" };
+const MODES = { 0: "位图", 1: "灰度", 2: "索引", 3: "RGB", 4: "CMYK", 7: "多通道", 8: "双色调", 9: "Lab" };
+
+async function inflateZlib(bytes) {
+  const st = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate"));
+  return new Uint8Array(await new Response(st).arrayBuffer());
+}
+
+function decodeLayerChannel(c, w, h) { // 返回平面的 8-bit 灰度数组,不支持时 null
+  if (c.raw) return c.raw;
+  if (c.rleRows) {
+    const planes = [];
+    let off = 0;
+    for (let y = 0; y < h; y++) {
+      const row = decodePackbits(c.rleData.subarray(off, off + c.rleRows[y]), w);
+      planes.push(row); off += c.rleRows[y];
+    }
+    const out = new Uint8Array(w * h);
+    for (let y = 0; y < h; y++) out.set(planes[y], y * w);
+    return out;
+  }
+  return null;
+}
+
+async function parsePSD(u8) {
+  const r = new R(u8);
+  r.check("8BPS");
+  const ver = r.u16();
+  if (ver !== 1) throw new Error(ver === 2 ? "这是 PSB(大格式),暂不支持" : "未知版本 " + ver);
+  r.skip(6);
+  const channels = r.u16(), rows = r.u32(), cols = r.u32(), depth = r.u16(), mode = r.u16();
+  if (cols <= 0 || rows <= 0 || cols > 30000 || rows > 30000) throw new Error("尺寸异常");
+  r.skip(r.u32()); // 颜色模式数据
+  r.skip(r.u32()); // 图像资源
+  const lmLen = r.u32();
+  const lmEnd = r.o + lmLen;
+  const psd = { channels, rows, cols, depth, mode, layers: [], warnings: [] };
+
+  /* ---- 图层记录 ---- */
+  const liLen = r.u32();
+  const liEnd = r.o + liLen;
+  let count = r.i16();
+  const n = Math.abs(count);
+  for (let i = 0; i < n; i++) {
+    const L = {};
+    L.top = r.i32(); L.left = r.i32(); L.bottom = r.i32(); L.right = r.i32();
+    L.w = L.right - L.left; L.h = L.bottom - L.top;
+    const nch = r.u16();
+    L.channels = [];
+    for (let c = 0; c < nch; c++) L.channels.push({ id: r.i16(), len: r.u32() });
+    r.check("8BIM");
+    L.blendKey = r.ascii(4);
+    L.opacity = r.u8(); r.u8(); L.flags = r.u8(); r.skip(1);
+    const extraLen = r.u32();
+    const extraEnd = r.o + extraLen;
+    r.skip(r.u32()); // 图层蒙版
+    r.skip(r.u32()); // 混合范围
+    const nl = r.u8();
+    L.name = new TextDecoder("latin1").decode(r.bytes(nl));
+    r.skip(((4 - ((nl + 1) % 4)) % 4));
+    L.luni = null; L.isDivider = false;
+    while (r.o + 8 <= extraEnd) {
+      r.check("8BIM");
+      const key = r.ascii(4), blen = r.u32(), bend = r.o + blen;
+      if (key === "luni") { const m = r.u32(); let s = ""; for (let k = 0; k < m; k++) s += String.fromCharCode(r.u16()); L.luni = s; }
+      else if (key === "lsct") { const t = r.u32(); if (t >= 1 && t <= 3) L.isDivider = true; }
+      r.seek(Math.min(bend, extraEnd));
+      if (blen < 0) break;
+    }
+    r.seek(extraEnd);
+    L.displayName = L.luni || L.name;
+    L.visible = !(L.flags & 2) && L.w > 0 && L.h > 0 && !L.isDivider;
+    psd.layers.push(L);
+  }
+  /* ---- 图层通道数据 ---- */
+  for (const L of psd.layers) {
+    for (const c of L.channels) {
+      const start = r.o;
+      const comp = r.u16();
+      if (comp === 0) c.raw = r.bytes(L.w * L.h);
+      else if (comp === 1) {
+        const tbl = [];
+        for (let y = 0; y < L.h; y++) tbl.push(r.u16());
+        let total = 0; for (const t of tbl) total += t;
+        c.rleData = r.bytes(total); c.rleRows = tbl;
+      } else { psd.warnings.push(`图层「${L.displayName}」有 ZIP 压缩通道,该层无法解码(合并图不受影响)`); }
+      r.seek(start + c.len);
+    }
+  }
+  r.seek(lmEnd);
+
+  /* ---- 合并图像数据(文件末尾) ---- */
+  const bytesPer = depth === 16 ? 2 : 1;
+  const planeLen = rows * cols * bytesPer;
+  const comp = r.u16();
+  let planes;
+  if (comp === 0) planes = r.bytes(channels * planeLen);
+  else if (comp === 1) {
+    const tbl = [];
+    for (let c = 0; c < channels; c++) for (let y = 0; y < rows; y++) tbl.push(r.u16());
+    let total = 0; for (const t of tbl) total += t;
+    const packed = r.bytes(total);
+    planes = new Uint8Array(channels * planeLen);
+    let off = 0;
+    for (let c = 0; c < channels; c++)
+      for (let y = 0; y < rows; y++) {
+        const rowLen = tbl[c * rows + y];
+        const row = decodePackbits(packed.subarray(off, off + rowLen), cols * bytesPer);
+        planes.set(row, c * planeLen + y * cols * bytesPer);
+        off += rowLen;
+      }
+  }
+  else if (comp === 2 || comp === 3) {
+    planes = await inflateZlib(u8.subarray(r.o));
+    if (planes.length < channels * planeLen) planes = planes.subarray(0, channels * planeLen);
+    if (comp === 3) { // 水平预测还原:逐行累积差分
+      const fixed = new Uint8Array(planes);
+      for (let c = 0; c < channels; c++)
+        for (let y = 0; y < rows; y++) {
+          const base = c * planeLen + y * cols * bytesPer;
+          for (let x = bytesPer; x < cols * bytesPer; x++) fixed[base + x] = (fixed[base + x] + fixed[base + x - 1]) & 255;
+        }
+      planes = fixed;
+    }
+    psd.warnings.push(`合并图为 ZIP 压缩(${comp === 3 ? "含预测还原" : ""}),已尝试解码`);
+  }
+  else throw new Error("不支持的合并图压缩类型 " + comp);
+  psd.planes = planes;
+
+  /* ---- 平面 → RGBA ---- */
+  const px = rows * cols;
+  const img = new ImageData(cols, rows);
+  const d = img.data;
+  const at = (c, i) => depth === 16 ? planes[c * planeLen + i * 2] : planes[c * planeLen + i];
+  if (mode === 3) {
+    const hasA = channels >= 4;
+    for (let i = 0; i < px; i++) {
+      d[i * 4] = at(0, i); d[i * 4 + 1] = at(1, i); d[i * 4 + 2] = at(2, i);
+      d[i * 4 + 3] = hasA ? at(3, i) : 255;
+    }
+  } else if (mode === 1 || mode === 8) {
+    const hasA = channels >= 2;
+    for (let i = 0; i < px; i++) { const g = at(0, i); d[i * 4] = d[i * 4 + 1] = d[i * 4 + 2] = g; d[i * 4 + 3] = hasA ? at(1, i) : 255; }
+  } else if (mode === 4) {
+    const kIdx = 3, aIdx = channels >= 5 ? 4 : -1; // CMYK 存储是反相的
+    for (let i = 0; i < px; i++) {
+      const cc = at(0, i), mm = at(1, i), yy = at(2, i), kk = at(kIdx, i);
+      d[i * 4] = (cc * kk + 127) / 255 | 0; // 反相存储:R = sc*sk/255(近似,无 ICC)
+      d[i * 4 + 1] = (mm * kk + 127) / 255 | 0;
+      d[i * 4 + 2] = (yy * kk + 127) / 255 | 0;
+      d[i * 4 + 3] = aIdx >= 0 ? at(aIdx, i) : 255;
+    }
+    psd.warnings.push("CMYK 按无 ICC 配置近似转 RGB,颜色可能有偏差");
+  } else {
+    throw new Error(`暂不支持色彩模式:${MODES[mode] || mode}`);
+  }
+  if (depth === 16) psd.warnings.push("16-bit 已降为 8-bit 显示");
+  psd.composite = img;
+  psd.compositeComp = comp;
+  return psd;
+}
+
+/* ================= 图层渲染 ================= */
+function layerCanvas(psd, L) {
+  const w = L.w, h = L.h;
+  if (w <= 0 || h <= 0) return null;
+  const px = w * h;
+  const rgba = new Uint8ClampedArray(px * 4);
+  const plane = {};
+  let ok = true;
+  for (const c of L.channels) {
+    if (c.id >= -1 && c.id <= 2) { const p = decodeLayerChannel(c, w, h); if (!p) { ok = false; break; } plane[c.id] = p; }
+  }
+  if (!ok || plane[0] === undefined || plane[1] === undefined || plane[2] === undefined) return null;
+  const hasA = plane[-1] !== undefined;
+  for (let i = 0; i < px; i++) {
+    rgba[i * 4] = plane[0][i]; rgba[i * 4 + 1] = plane[1][i]; rgba[i * 4 + 2] = plane[2][i];
+    rgba[i * 4 + 3] = hasA ? plane[-1][i] : 255;
+  }
+  const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+  cv.getContext("2d").putImageData(new ImageData(rgba, w, h), 0, 0);
+  return cv;
+}
+
+function renderLive(psd, visible) {
+  const cv = document.createElement("canvas"); cv.width = psd.cols; cv.height = psd.rows;
+  const ctx = cv.getContext("2d");
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  for (const L of psd.layers) {
+    if (!visible.has(L) || L.isDivider) continue;
+    const lc = L.__canvas || (L.__canvas = layerCanvas(psd, L));
+    if (!lc) continue;
+    ctx.globalAlpha = L.opacity / 255;
+    ctx.globalCompositeOperation = BLEND[L.blendKey] || "source-over";
+    ctx.drawImage(lc, L.left, L.top);
+  }
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over";
+  return cv;
+}
+
+/* ================= UI ================= */
+const $ = id => document.getElementById(id);
+let PSD = null;
+const visible = new Set();
+
+function msg(t, cls) { const e = $("msg"); e.textContent = t; e.className = "msg " + (cls || "dim"); }
+
+const dz = $("dz");
+const input = Object.assign(document.createElement("input"), { type: "file", accept: ".psd" });
+dz.appendChild(input);
+dz.onclick = () => input.click();
+input.onchange = () => loadFile(input.files[0]);
+dz.ondragover = e => { e.preventDefault(); dz.classList.add("over"); };
+dz.ondragleave = () => dz.classList.remove("over");
+dz.ondrop = e => { e.preventDefault(); dz.classList.remove("over"); loadFile(e.dataTransfer.files[0]); };
+
+async function loadFile(f) {
+  if (!f) return;
+  try {
+    msg("解析中…", "dim");
+    const t = Date.now();
+    PSD = await parsePSD(new Uint8Array(await f.arrayBuffer()));
+    visible.clear();
+    for (const L of PSD.layers) if (L.visible) visible.add(L);
+    $("pane").style.display = "";
+    const i = PSD;
+    $("infoCard").innerHTML = `<h2>文件信息</h2>
+      <div class="kbig"><b>${f.name}</b> · ${(f.size / 1024).toFixed(0)} KB · ${i.cols}×${i.rows} · ${i.channels} 通道 · ${i.depth}bit · ${MODES[i.mode] || i.mode} · 合并图压缩 ${["Raw", "RLE", "ZIP", "ZIP+预测"][i.compositeComp] || i.compositeComp} · 解析 ${Date.now() - t} ms</div>
+      ${PSD.warnings.map(w => `<div class="warn">${w}</div>`).join("")}`;
+    buildLayerList();
+    showFile();
+    msg(`解析完成:${PSD.layers.filter(L => !L.isDivider).length} 个图层`, "ok");
+  } catch (e) { $("pane").style.display = "none"; msg("解析失败:" + e.message, "err"); }
+}
+
+function buildLayerList() {
+  const ul = $("layerList"); ul.innerHTML = "";
+  let drawables = 0;
+  PSD.layers.forEach((L, idx) => {
+    const li = document.createElement("li");
+    if (L.isDivider) { li.className = "divider"; li.textContent = "— 组:" + L.displayName + " —"; ul.appendChild(li); return; }
+    drawables++;
+    const decodable = L.channels.some(c => c.raw || c.rleRows);
+    li.className = L.visible ? "" : "off";
+    li.innerHTML = `<input type="checkbox" ${L.visible ? "checked" : ""} ${decodable ? "" : "disabled"}>
+      <span class="nm" title="${L.displayName}">${L.displayName}</span>
+      <span class="meta">${L.w}×${L.h} · ${Math.round(L.opacity / 255 * 100)}% · ${L.blendKey.trim()}</span>
+      ${decodable ? `<a href="#" data-i="${idx}">导出PNG</a>` : `<span class="meta">ZIP 不可解码</span>`}`;
+    ul.appendChild(li);
+    li.querySelector("input").onchange = ev => {
+      ev.target.checked ? visible.add(L) : visible.delete(L);
+      li.className = ev.target.checked ? "" : "off";
+      if ($("pvTitle").textContent.includes("重渲")) showLive(); else showLive(); // 开关后一律实时重渲
+    };
+    const a = li.querySelector("a");
+    if (a) a.onclick = ev => {
+      ev.preventDefault();
+      const cv = L.__canvas || (L.__canvas = layerCanvas(PSD, L));
+      if (!cv) { msg("该层解码失败", "err"); return; }
+      cv.toBlob(b => { const url = URL.createObjectURL(b);
+        Object.assign(document.createElement("a"), { href: url, download: `layer${idx}_${L.displayName.replace(/[\\/:*?"<>|]/g, "_")}.png` }).click(); }, "image/png");
+    };
+  });
+  $("lyCount").textContent = drawables;
+}
+
+function showCanvas(cv, title) {
+  const pv = $("pv"); pv.width = cv.width; pv.height = cv.height;
+  pv.getContext("2d").drawImage(cv, 0, 0);
+  $("pvTitle").textContent = title;
+  $("btnDl").disabled = false;
+}
+function showFile() { if (PSD) showCanvas(renderFile(), `文件合并图(编辑器保存时的最终效果)`); }
+function showLive() { if (PSD) showCanvas(renderLive(PSD, visible), "按图层实时重渲(可开关图层)"); }
+
+function renderFile() {
+  const cv = document.createElement("canvas"); cv.width = PSD.cols; cv.height = PSD.rows;
+  cv.getContext("2d").putImageData(PSD.composite, 0, 0);
+  return cv;
+}
+
+$("btnFile").onclick = showFile;
+$("btnLive").onclick = showLive;
+$("btnDl").onclick = () => {
+  $("pv").toBlob(b => { const url = URL.createObjectURL(b);
+    Object.assign(document.createElement("a"), { href: url, download: "psd_view_" + Date.now() + ".png" }).click(); }, "image/png");
+};
+
+/* 供自动化测试 */
+window.__PSD = { parsePSD, renderLive, renderFile, decodePackbits, layerCanvas };
+</script>
+</body>
+</html>
